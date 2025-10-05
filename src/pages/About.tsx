@@ -2,22 +2,37 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Target, Heart, Zap } from "lucide-react";
+import heroBackground from "@/assets/hero-background.jpg";
+import { Helmet } from "react-helmet-async";
 
 const About = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>About Us - Coshikowa Agency | Leading Employment Agency in Kenya</title>
+        <meta name="description" content="Learn about Coshikowa Agency's mission to empower Kenyans with meaningful employment opportunities and help businesses discover exceptional talent." />
+        <meta name="keywords" content="about Coshikowa Agency, employment agency Kenya, recruitment agency, job portal Kenya" />
+      </Helmet>
       <Navbar />
       
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-primary to-primary/80 py-20">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
-              About Kenya Jobs
-            </h1>
-            <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
-              Empowering Kenyans to find meaningful work and helping businesses discover exceptional talent
-            </p>
+        {/* Hero Section with Image */}
+        <section className="relative h-80 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90 z-10" />
+          <img 
+            src={heroBackground} 
+            alt="About Coshikowa Agency" 
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
+            <div className="text-center w-full">
+              <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
+                About Coshikowa Agency
+              </h1>
+              <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
+                Empowering Kenyans to find meaningful work and helping businesses discover exceptional talent
+              </p>
+            </div>
           </div>
         </section>
 
@@ -27,7 +42,7 @@ const About = () => {
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Mission</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                At Kenya Jobs, we believe every Kenyan deserves access to quality employment opportunities, 
+                At Coshikowa Agency, we believe every Kenyan deserves access to quality employment opportunities,
                 and every business deserves to find the right talent. We're bridging the gap between job 
                 seekers and employers through a streamlined, affordable, and effective platform.
               </p>

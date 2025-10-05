@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import jobSeekersImg from "@/assets/job-seekers.jpg";
+import { Helmet } from "react-helmet-async";
 
 const GetHired = () => {
   const { toast } = useToast();
@@ -90,16 +92,35 @@ const GetHired = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>Get Hired - Coshikowa Agency | Find Your Dream Job in Kenya</title>
+        <meta name="description" content="Register for free and connect with top employers across Kenya. Verified profiles, fast matching, and expert career support." />
+        <meta name="keywords" content="get hired Kenya, job application Kenya, find employment, career opportunities Kenya, job registration" />
+      </Helmet>
       <Navbar />
       
-      <main className="flex-1 py-12 bg-muted">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4">Get Hired Today</h1>
-            <p className="text-muted-foreground text-lg">
+      {/* Header with Image */}
+      <section className="relative h-64 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-accent/90 to-accent/70 z-10" />
+        <img 
+          src={jobSeekersImg} 
+          alt="Job seekers success" 
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
+          <div className="text-center w-full">
+            <h1 className="text-4xl md:text-5xl font-bold text-accent-foreground mb-4">
+              Get Hired Today
+            </h1>
+            <p className="text-xl text-accent-foreground/90">
               Fill out your profile and get matched with top employers in Kenya - completely free!
             </p>
           </div>
+        </div>
+      </section>
+      
+      <main className="flex-1 py-12 bg-muted">
+        <div className="container mx-auto px-4 max-w-3xl">
 
           <Card className="p-6 md:p-8">
             <form onSubmit={handleSubmit} className="space-y-6">

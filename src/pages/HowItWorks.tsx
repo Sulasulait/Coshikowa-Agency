@@ -4,22 +4,37 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { CheckCircle2, CreditCard, FileText, Users } from "lucide-react";
+import heroBackground from "@/assets/hero-background.jpg";
+import { Helmet } from "react-helmet-async";
 
 const HowItWorks = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>How It Works - Coshikowa Agency | Simple Job Matching Process</title>
+        <meta name="description" content="Learn how Coshikowa Agency connects job seekers with employers in Kenya. Simple, secure, and effective job matching in just a few steps." />
+        <meta name="keywords" content="how it works, job matching process, employment process Kenya, hiring steps" />
+      </Helmet>
       <Navbar />
       
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-primary to-primary/80 py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-4">
-              How Kenya Jobs Works
-            </h1>
-            <p className="text-xl text-primary-foreground/90 max-w-2xl mx-auto">
-              Simple, secure, and effective job matching in just a few steps
-            </p>
+        {/* Hero Section with Image */}
+        <section className="relative h-64 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90 z-10" />
+          <img 
+            src={heroBackground} 
+            alt="How it works" 
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
+            <div className="text-center w-full">
+              <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-4">
+                How Coshikowa Agency Works
+              </h1>
+              <p className="text-xl text-primary-foreground/90 max-w-2xl mx-auto">
+                Simple, secure, and effective job matching in just a few steps
+              </p>
+            </div>
           </div>
         </section>
 

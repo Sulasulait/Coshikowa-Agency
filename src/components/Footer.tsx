@@ -8,9 +8,9 @@ const Footer = () => {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">KJ</span>
+                <span className="text-primary-foreground font-bold">CA</span>
               </div>
-              <span className="font-bold text-lg">Kenya Jobs</span>
+              <span className="font-bold text-lg">Coshikowa Agency</span>
             </div>
             <p className="text-muted-foreground text-sm">
               Connecting talented Kenyans with opportunities across the country.
@@ -58,8 +58,19 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Kenya Jobs. All rights reserved.</p>
+        <div className="mt-8 pt-8 border-t border-border">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+            <p>&copy; {new Date().getFullYear()} Coshikowa Agency. All rights reserved.</p>
+            <div className="flex gap-4">
+              <Link to="/legal-disclaimer" className="hover:text-foreground transition-colors">
+                Legal Disclaimer
+              </Link>
+              <span>|</span>
+              <Link to="/refund-policy" className="hover:text-foreground transition-colors">
+                Refund Policy
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

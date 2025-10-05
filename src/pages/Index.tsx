@@ -4,29 +4,35 @@ import { Card } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Briefcase, Users, Shield, Zap } from "lucide-react";
-import heroBackground from "@/assets/hero-background.jpg";
 import jobSeekersImg from "@/assets/job-seekers.jpg";
 import employersImg from "@/assets/employers.jpg";
+import { HeroCarousel } from "@/components/HeroCarousel";
+import { JobOpeningsSection } from "./JobOpenings";
+import { Helmet } from "react-helmet";
 
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>Coshikowa Agency - Your Gateway to Career Success in Kenya</title>
+        <meta name="description" content="Connect with top employers in Kenya or find qualified talent for your business. Verified profiles, fast matching, and expert support for job seekers and employers." />
+        <meta name="keywords" content="Kenya jobs, job seekers Kenya, find talent Kenya, employment agency Kenya, Nairobi jobs, Mombasa jobs, career opportunities Kenya" />
+        <link rel="canonical" href="https://yourwebsite.com/" />
+      </Helmet>
       <Navbar />
       
       {/* Hero Section */}
       <section className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/70 z-10" />
-        <img 
-          src={heroBackground} 
-          alt="Professional team collaboration" 
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/85 to-secondary/85 z-10" />
+        <div className="absolute inset-0 z-0">
+          <HeroCarousel />
+        </div>
         <div className="container mx-auto px-4 relative z-20 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in">
-            Your Gateway to Career Success in Kenya
+          <h1 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in drop-shadow-lg">
+            Welcome to Coshikowa Agency
           </h1>
-          <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto">
-            Connect with top employers or find the perfect talent. Your next opportunity starts here.
+          <p className="text-xl md:text-2xl text-primary-foreground mb-8 max-w-3xl mx-auto drop-shadow-md">
+            Your Gateway to Career Success in Kenya - Connect with top employers or find the perfect talent
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/get-hired">
@@ -49,7 +55,7 @@ const Index = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Why Choose Kenya Jobs?
+            Why Choose Coshikowa Agency?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
@@ -177,14 +183,16 @@ const Index = () => {
         </div>
       </section>
 
+      <JobOpeningsSection />
+
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary to-primary/80">
+      <section className="py-20 bg-gradient-to-r from-primary to-secondary">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
             Ready to Take the Next Step?
           </h2>
           <p className="text-xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of Kenyans who have found their perfect match through our platform
+            Join thousands of Kenyans who have found their perfect match through Coshikowa Agency
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/get-hired">

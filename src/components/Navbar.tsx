@@ -23,9 +23,9 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">KJ</span>
+              <span className="text-primary-foreground font-bold text-xl">CA</span>
             </div>
-            <span className="font-bold text-xl text-foreground">Kenya Jobs</span>
+            <span className="font-bold text-xl text-foreground">Coshikowa Agency</span>
           </Link>
 
           {/* Desktop Navigation */}
