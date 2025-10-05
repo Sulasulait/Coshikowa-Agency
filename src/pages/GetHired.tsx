@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,9 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const GetHired = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -50,11 +49,43 @@ const GetHired = () => {
 
     setIsLoading(true);
 
-    // Store form data in sessionStorage for payment page
-    sessionStorage.setItem("jobSeekerData", JSON.stringify(formData));
-    
-    // Navigate to payment page
-    navigate("/payment");
+    try {
+      // Call the edge function to send the application
+      const { error } = await supabase.functions.invoke("send-job-application", {
+        body: formData,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Application Submitted!",
+        description: "We've received your application and will contact you within 24 hours.",
+      });
+
+      // Reset form
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        location: "",
+        education: "",
+        experience: "",
+        skills: "",
+        desiredPosition: "",
+        salary: "",
+        availability: "",
+        additionalInfo: "",
+      });
+    } catch (error: any) {
+      console.error("Error submitting application:", error);
+      toast({
+        title: "Submission Failed",
+        description: "There was an error submitting your application. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -66,12 +97,8 @@ const GetHired = () => {
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4">Get Hired Today</h1>
             <p className="text-muted-foreground text-lg">
-              Fill out your profile and get matched with top employers in Kenya
+              Fill out your profile and get matched with top employers in Kenya - completely free!
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-lg">
-              <span className="font-semibold">Registration Fee:</span>
-              <span className="text-2xl font-bold">KSH 1,500</span>
-            </div>
           </div>
 
           <Card className="p-6 md:p-8">
@@ -226,7 +253,7 @@ const GetHired = () => {
                   <h3 className="font-semibold mb-2">Next Steps:</h3>
                   <ol className="text-sm text-muted-foreground space-y-1">
                     <li>1. Review your information</li>
-                    <li>2. Complete secure payment of KSH 1,500</li>
+                    <li>2. Submit your application</li>
                     <li>3. Receive confirmation email</li>
                     <li>4. Get matched with employers within 24 hours</li>
                   </ol>
@@ -242,10 +269,10 @@ const GetHired = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
+                      Submitting...
                     </>
                   ) : (
-                    "Proceed to Payment"
+                    "Submit Application"
                   )}
                 </Button>
               </div>
