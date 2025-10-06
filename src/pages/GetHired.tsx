@@ -33,6 +33,8 @@ const GetHired = () => {
     availability: "",
     additionalInfo: "",
   });
+  const [idDocument, setIdDocument] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<string>("");
 
   const jobCategories = [
     "Technology & IT",
@@ -71,6 +73,33 @@ const GetHired = () => {
     });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        toast({
+          title: "File Too Large",
+          description: "Please upload a file smaller than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload a JPEG, PNG, or PDF file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setIdDocument(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -94,19 +123,62 @@ const GetHired = () => {
       return;
     }
 
+    // Validate ID document upload
+    if (!idDocument) {
+      toast({
+        title: "Missing Document",
+        description: "Please upload your ID document",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
+      let idDocumentUrl = "";
+
+      // Upload ID document to Supabase storage
+      if (idDocument) {
+        setUploadProgress("Uploading ID document...");
+        const fileExt = idDocument.name.split('.').pop();
+        const fileName = `${Date.now()}_${formData.idNumber}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError, data: uploadData } = await supabase.storage
+          .from('id-documents')
+          .upload(filePath, idDocument, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          throw new Error("Failed to upload ID document");
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('id-documents')
+          .getPublicUrl(filePath);
+
+        idDocumentUrl = publicUrl;
+      }
+
+      setUploadProgress("Sending application...");
+
       // Call the edge function to send the application
       const { error } = await supabase.functions.invoke("send-job-application", {
-        body: formData,
+        body: {
+          ...formData,
+          idDocumentUrl,
+        },
       });
 
       if (error) throw error;
 
       toast({
         title: "Application Submitted!",
-        description: "We've received your application and will contact you within 24 hours.",
+        description: "We've received your application and will contact you within 24 hours. Check your email for confirmation.",
       });
 
       // Reset form
@@ -127,15 +199,22 @@ const GetHired = () => {
         availability: "",
         additionalInfo: "",
       });
+      setIdDocument(null);
+      setUploadProgress("");
+
+      // Reset file input
+      const fileInput = document.getElementById("idDocument") as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
     } catch (error: any) {
       console.error("Error submitting application:", error);
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your application. Please try again.",
+        description: error.message || "There was an error submitting your application. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
+      setUploadProgress("");
     }
   };
 
@@ -202,7 +281,7 @@ const GetHired = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="idNumber">Valid National ID / Passport / Driving License *</Label>
+                    <Label htmlFor="idNumber">Valid National ID / Passport / Driving License Number *</Label>
                     <Input
                       id="idNumber"
                       name="idNumber"
@@ -212,6 +291,27 @@ const GetHired = () => {
                       required
                     />
                   </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="idDocument">Upload ID Document (National ID / Passport / Driving License) *</Label>
+                  <Input
+                    id="idDocument"
+                    name="idDocument"
+                    type="file"
+                    onChange={handleFileChange}
+                    accept="image/jpeg,image/jpg,image/png,application/pdf"
+                    required
+                    className="cursor-pointer"
+                  />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Accepted formats: JPEG, PNG, PDF (Max size: 5MB)
+                  </p>
+                  {idDocument && (
+                    <p className="text-sm text-green-600 mt-2">
+                      ✓ {idDocument.name} selected
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -399,7 +499,7 @@ const GetHired = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting...
+                      {uploadProgress || "Submitting..."}
                     </>
                   ) : (
                     "Submit Application"
