@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,17 +18,44 @@ const GetHired = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
+    dateOfBirth: "",
+    idNumber: "",
     email: "",
     phone: "",
     location: "",
     education: "",
     experience: "",
     skills: "",
+    jobCategory: "",
     desiredPosition: "",
+    customPosition: "",
     salary: "",
     availability: "",
     additionalInfo: "",
   });
+
+  const jobCategories = [
+    "Technology & IT",
+    "Healthcare & Medical",
+    "Finance & Accounting",
+    "Sales & Marketing",
+    "Education & Training",
+    "Engineering",
+    "Hospitality & Tourism",
+    "Manufacturing & Production",
+    "Human Resources",
+    "Customer Service",
+    "Administration & Office",
+    "Construction & Trades",
+    "Legal",
+    "Media & Communications",
+    "Transportation & Logistics",
+    "Agriculture & Farming",
+    "Security & Safety",
+    "Real Estate",
+    "Retail & Wholesale",
+    "Others"
+  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -36,14 +64,31 @@ const GetHired = () => {
     });
   };
 
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.desiredPosition) {
+    if (!formData.fullName || !formData.dateOfBirth || !formData.idNumber || !formData.email || !formData.phone || !formData.jobCategory) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate that if "Others" is selected, custom position is filled
+    if (formData.jobCategory === "Others" && !formData.customPosition) {
+      toast({
+        title: "Missing Information",
+        description: "Please specify your desired job position",
         variant: "destructive",
       });
       return;
@@ -67,13 +112,17 @@ const GetHired = () => {
       // Reset form
       setFormData({
         fullName: "",
+        dateOfBirth: "",
+        idNumber: "",
         email: "",
         phone: "",
         location: "",
         education: "",
         experience: "",
         skills: "",
+        jobCategory: "",
         desiredPosition: "",
+        customPosition: "",
         salary: "",
         availability: "",
         additionalInfo: "",
@@ -137,6 +186,32 @@ const GetHired = () => {
                     placeholder="John Doe"
                     required
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                    <Input
+                      id="dateOfBirth"
+                      name="dateOfBirth"
+                      type="date"
+                      value={formData.dateOfBirth}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="idNumber">Valid National ID / Passport / Driving License *</Label>
+                    <Input
+                      id="idNumber"
+                      name="idNumber"
+                      value={formData.idNumber}
+                      onChange={handleChange}
+                      placeholder="Enter your ID number"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -219,18 +294,52 @@ const GetHired = () => {
 
               <div className="space-y-4">
                 <h2 className="text-xl font-semibold">Job Preferences</h2>
-                
+
                 <div>
-                  <Label htmlFor="desiredPosition">Desired Job Position *</Label>
-                  <Input
-                    id="desiredPosition"
-                    name="desiredPosition"
-                    value={formData.desiredPosition}
-                    onChange={handleChange}
-                    placeholder="e.g., Software Developer, Accountant, Sales Manager"
-                    required
-                  />
+                  <Label htmlFor="jobCategory">Job Category *</Label>
+                  <Select
+                    value={formData.jobCategory}
+                    onValueChange={(value) => handleSelectChange("jobCategory", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a job category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {jobCategories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {formData.jobCategory === "Others" && (
+                  <div>
+                    <Label htmlFor="customPosition">Specify Your Desired Job Position *</Label>
+                    <Input
+                      id="customPosition"
+                      name="customPosition"
+                      value={formData.customPosition}
+                      onChange={handleChange}
+                      placeholder="Enter your desired job position"
+                      required
+                    />
+                  </div>
+                )}
+
+                {formData.jobCategory && formData.jobCategory !== "Others" && (
+                  <div>
+                    <Label htmlFor="desiredPosition">Specific Job Position (Optional)</Label>
+                    <Input
+                      id="desiredPosition"
+                      name="desiredPosition"
+                      value={formData.desiredPosition}
+                      onChange={handleChange}
+                      placeholder="e.g., Senior Software Developer, Junior Accountant"
+                    />
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
