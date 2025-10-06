@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import jobSeekersImg from "@/assets/job-seekers.jpg";
 import { Helmet } from "react-helmet-async";
@@ -15,10 +15,14 @@ import { Helmet } from "react-helmet-async";
 const GetHired = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
+  const [idFile, setIdFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
+    dateOfBirth: "",
     location: "",
     education: "",
     experience: "",
@@ -36,14 +40,29 @@ const GetHired = () => {
     });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setIdFile(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate required fields
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.desiredPosition) {
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.dateOfBirth || !formData.desiredPosition || !idFile) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields",
+        description: "Please fill in all required fields and upload your ID",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isPaid) {
+      toast({
+        title: "Payment Required",
+        description: "Please complete the payment before submitting",
         variant: "destructive",
       });
       return;
@@ -69,6 +88,7 @@ const GetHired = () => {
         fullName: "",
         email: "",
         phone: "",
+        dateOfBirth: "",
         location: "",
         education: "",
         experience: "",
@@ -78,6 +98,9 @@ const GetHired = () => {
         availability: "",
         additionalInfo: "",
       });
+      setIdFile(null);
+      setIsPaid(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error: any) {
       console.error("Error submitting application:", error);
       toast({
@@ -90,12 +113,52 @@ const GetHired = () => {
     }
   };
 
+  // Load PayPal script
+  useState(() => {
+    const script = document.createElement("script");
+    script.src = "https://www.paypal.com/sdk/js?client-id=AQswTt7epLeM9OBwF7YpbP87Hm2YnOu_vEYjOvQG8D8KY2vFJjHQx7pztP9Hl4SYIGQBvjfONNWvJo7d&currency=USD";
+    script.async = true;
+    script.onload = () => {
+      if ((window as any).paypal) {
+        (window as any).paypal.Buttons({
+          createOrder: (data: any, actions: any) => {
+            return actions.order.create({
+              purchase_units: [{
+                amount: {
+                  value: "15.00" // Approximately 1,500 KSH
+                }
+              }]
+            });
+          },
+          onApprove: async (data: any, actions: any) => {
+            return actions.order.capture().then(() => {
+              setIsPaid(true);
+              toast({
+                title: "Payment Successful",
+                description: "You can now submit your application",
+              });
+            });
+          },
+          onError: (err: any) => {
+            toast({
+              title: "Payment Failed",
+              description: "There was an error processing your payment",
+              variant: "destructive",
+            });
+          }
+        }).render('#paypal-button-container');
+      }
+    };
+    document.body.appendChild(script);
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Get Hired - Coshikowa Agency | Find Your Dream Job in Kenya</title>
         <meta name="description" content="Register for free and connect with top employers across Kenya. Verified profiles, fast matching, and expert career support." />
         <meta name="keywords" content="get hired Kenya, job application Kenya, find employment, career opportunities Kenya, job registration" />
+        <script src="https://www.paypal.com/sdk/js?client-id=AQswTt7epLeM9OBwF7YpbP87Hm2YnOu_vEYjOvQG8D8KY2vFJjHQx7pztP9Hl4SYIGQBvjfONNWvJo7d&currency=USD" async></script>
       </Helmet>
       <Navbar />
       
@@ -106,6 +169,7 @@ const GetHired = () => {
           src={jobSeekersImg} 
           alt="Job seekers success" 
           className="absolute inset-0 w-full h-full object-cover"
+          loading="eager"
         />
         <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
           <div className="text-center w-full">
@@ -164,6 +228,44 @@ const GetHired = () => {
                       placeholder="+254 712 345 678"
                       required
                     />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                    <Input
+                      id="dateOfBirth"
+                      name="dateOfBirth"
+                      type="date"
+                      value={formData.dateOfBirth}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="idUpload">ID Upload (National ID, Driving License, or Passport) *</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="idUpload"
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={handleFileChange}
+                        required
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-full"
+                      >
+                        <Upload className="mr-2 h-4 w-4" />
+                        {idFile ? idFile.name : "Upload ID"}
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
@@ -271,12 +373,26 @@ const GetHired = () => {
 
               <div className="pt-6 border-t border-border">
                 <div className="bg-primary/5 p-4 rounded-lg mb-6">
+                  <h3 className="font-semibold mb-2">Payment Required:</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    A registration fee of KSH 1,500 is required to process your application.
+                  </p>
+                  <div id="paypal-button-container" className="mb-4"></div>
+                  {isPaid && (
+                    <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-lg text-sm">
+                      ✓ Payment successful! You can now submit your application.
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-primary/5 p-4 rounded-lg mb-6">
                   <h3 className="font-semibold mb-2">Next Steps:</h3>
                   <ol className="text-sm text-muted-foreground space-y-1">
                     <li>1. Review your information</li>
-                    <li>2. Submit your application</li>
-                    <li>3. Receive confirmation email</li>
-                    <li>4. Get matched with employers within 24 hours</li>
+                    <li>2. Complete payment above</li>
+                    <li>3. Submit your application</li>
+                    <li>4. Receive confirmation email</li>
+                    <li>5. Get matched with employers within 24 hours</li>
                   </ol>
                 </div>
 
@@ -285,7 +401,7 @@ const GetHired = () => {
                   variant="hero"
                   size="lg"
                   className="w-full"
-                  disabled={isLoading}
+                  disabled={isLoading || !isPaid}
                 >
                   {isLoading ? (
                     <>
