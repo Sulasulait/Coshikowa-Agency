@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -105,7 +105,7 @@ const FindTalent = () => {
   };
 
   // Load PayPal script
-  useState(() => {
+  useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://www.paypal.com/sdk/js?client-id=AQswTt7epLeM9OBwF7YpbP87Hm2YnOu_vEYjOvQG8D8KY2vFJjHQx7pztP9Hl4SYIGQBvjfONNWvJo7d&currency=USD";
     script.async = true;
@@ -141,7 +141,15 @@ const FindTalent = () => {
       }
     };
     document.body.appendChild(script);
-  });
+
+    return () => {
+      // Cleanup script on unmount
+      const existingScript = document.querySelector('script[src*="paypal.com/sdk"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
+  }, [toast]);
 
   return (
     <div className="min-h-screen flex flex-col">
