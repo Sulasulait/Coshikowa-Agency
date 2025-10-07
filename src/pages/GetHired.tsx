@@ -153,13 +153,16 @@ const GetHired = () => {
       <main className="flex-1 py-12 bg-muted">
         <div className="container mx-auto px-4 max-w-3xl">
 
-          <Card className="p-6 md:p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Personal Information</h2>
+          <Card className="p-8 md:p-10 shadow-xl">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="space-y-6">
+                <div className="pb-4 border-b border-border">
+                  <h2 className="text-2xl font-bold text-primary">Personal Information</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Tell us about yourself</p>
+                </div>
                 
-                <div>
-                  <Label htmlFor="fullName">Full Name *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="text-sm font-semibold">Full Name *</Label>
                   <Input
                     id="fullName"
                     name="fullName"
@@ -170,9 +173,9 @@ const GetHired = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="email">Email Address *</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-semibold">Email Address *</Label>
                     <Input
                       id="email"
                       name="email"
@@ -184,8 +187,8 @@ const GetHired = () => {
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="phone">Phone Number *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-semibold">Phone Number *</Label>
                     <Input
                       id="phone"
                       name="phone"
@@ -198,8 +201,8 @@ const GetHired = () => {
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="location">Location (City/County)</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="location" className="text-sm font-semibold">Location (City/County)</Label>
                   <Input
                     id="location"
                     name="location"
@@ -209,8 +212,8 @@ const GetHired = () => {
                   />
                 </div>
 
-                <div>
-                  <Label>Date of Birth</Label>
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold">Date of Birth</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -240,11 +243,14 @@ const GetHired = () => {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Professional Background</h2>
+              <div className="space-y-6">
+                <div className="pb-4 border-b border-border">
+                  <h2 className="text-2xl font-bold text-emerald-600">Professional Background</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Share your experience and skills</p>
+                </div>
                 
-                <div>
-                  <Label htmlFor="education">Highest Education Level</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="education" className="text-sm font-semibold">Highest Education Level</Label>
                   <Input
                     id="education"
                     name="education"
@@ -254,8 +260,8 @@ const GetHired = () => {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="experience">Work Experience (Years)</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="experience" className="text-sm font-semibold">Work Experience (Years)</Label>
                   <Input
                     id="experience"
                     name="experience"
@@ -265,8 +271,8 @@ const GetHired = () => {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="skills">Key Skills (comma separated)</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="skills" className="text-sm font-semibold">Key Skills (comma separated)</Label>
                   <Textarea
                     id="skills"
                     name="skills"
@@ -278,11 +284,14 @@ const GetHired = () => {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Job Preferences</h2>
+              <div className="space-y-6">
+                <div className="pb-4 border-b border-border">
+                  <h2 className="text-2xl font-bold text-blue-600">Job Preferences</h2>
+                  <p className="text-sm text-muted-foreground mt-1">What kind of role are you looking for?</p>
+                </div>
                 
-                <div>
-                  <Label htmlFor="desiredPosition">Desired Job Position *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="desiredPosition" className="text-sm font-semibold">Desired Job Position *</Label>
                   <Select
                     value={formData.desiredPosition}
                     onValueChange={(value) => setFormData({...formData, desiredPosition: value})}
@@ -302,8 +311,8 @@ const GetHired = () => {
                 </div>
 
                 {formData.desiredPosition === "Other" && (
-                  <div>
-                    <Label htmlFor="customPosition">Specify Your Position *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="customPosition" className="text-sm font-semibold">Specify Your Position *</Label>
                     <Input
                       id="customPosition"
                       name="customPosition"
@@ -315,9 +324,9 @@ const GetHired = () => {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="salary">Expected Salary Range (KSH)</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="salary" className="text-sm font-semibold">Expected Salary Range (KSH)</Label>
                     <Input
                       id="salary"
                       name="salary"
@@ -327,8 +336,8 @@ const GetHired = () => {
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="availability">Availability</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="availability" className="text-sm font-semibold">Availability</Label>
                     <Input
                       id="availability"
                       name="availability"
@@ -339,8 +348,8 @@ const GetHired = () => {
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="additionalInfo">Additional Information</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="additionalInfo" className="text-sm font-semibold">Additional Information</Label>
                   <Textarea
                     id="additionalInfo"
                     name="additionalInfo"
@@ -352,8 +361,8 @@ const GetHired = () => {
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-border">
-                <div className="bg-primary/5 p-4 rounded-lg mb-6">
+              <div className="pt-8 border-t border-border">
+                <div className="bg-gradient-to-r from-emerald-50 to-blue-50 p-6 rounded-lg mb-6 border border-emerald-200">
                   <h3 className="font-semibold mb-2">Next Steps:</h3>
                   <ol className="text-sm text-muted-foreground space-y-1">
                     <li>1. Review your information</li>

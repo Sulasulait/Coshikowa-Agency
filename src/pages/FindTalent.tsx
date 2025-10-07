@@ -104,19 +104,21 @@ const FindTalent = () => {
         {/* Main Content */}
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4 max-w-4xl">
-            <Card className="p-8 mb-8">
-              <div className="text-center mb-8">
-                <Briefcase className="h-12 w-12 mx-auto text-primary mb-4" />
-                <h2 className="text-3xl font-bold mb-4">Submit Your Hiring Request</h2>
-                <p className="text-muted-foreground">
+            <Card className="p-8 md:p-10 mb-8 shadow-xl">
+              <div className="text-center mb-10">
+                <div className="inline-block p-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-4">
+                  <Briefcase className="h-12 w-12 text-white" />
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Submit Your Hiring Request</h2>
+                <p className="text-muted-foreground text-lg">
                   Tell us about your hiring needs and we'll match you with qualified candidates
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="companyName">Company Name *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="companyName" className="text-sm font-semibold">Company Name *</Label>
                     <Input
                       id="companyName"
                       required
@@ -126,8 +128,8 @@ const FindTalent = () => {
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="contactPerson">Contact Person *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="contactPerson" className="text-sm font-semibold">Contact Person *</Label>
                     <Input
                       id="contactPerson"
                       required
@@ -137,8 +139,8 @@ const FindTalent = () => {
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="email">Email Address *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-semibold">Email Address *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -149,8 +151,8 @@ const FindTalent = () => {
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="phone">Phone Number *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-semibold">Phone Number *</Label>
                     <Input
                       id="phone"
                       required
@@ -160,8 +162,8 @@ const FindTalent = () => {
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="industry">Industry *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="industry" className="text-sm font-semibold">Industry *</Label>
                     <Input
                       id="industry"
                       required
@@ -171,8 +173,8 @@ const FindTalent = () => {
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="position">Position to Fill *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="position" className="text-sm font-semibold">Position to Fill *</Label>
                     <Input
                       id="position"
                       required
@@ -183,8 +185,8 @@ const FindTalent = () => {
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="requirements">Job Requirements & Qualifications *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="requirements" className="text-sm font-semibold">Job Requirements & Qualifications *</Label>
                   <Textarea
                     id="requirements"
                     required
@@ -195,8 +197,8 @@ const FindTalent = () => {
                   />
                 </div>
 
-                  <div>
-                    <Label htmlFor="urgency">How Soon Do You Need to Hire? *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="urgency" className="text-sm font-semibold">How Soon Do You Need to Hire? *</Label>
                     <Input
                       id="urgency"
                       required
@@ -206,8 +208,8 @@ const FindTalent = () => {
                     />
                   </div>
 
-                  <div>
-                    <Label>Date of Birth (Optional)</Label>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold">Date of Birth (Optional)</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -236,10 +238,10 @@ const FindTalent = () => {
                     </Popover>
                   </div>
 
-                <Button 
-                  type="submit" 
-                  size="lg" 
-                  className="w-full"
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -263,27 +265,27 @@ const FindTalent = () => {
               </div>
 
               <div className="space-y-8">
-                <div className="bg-accent/5 p-6 rounded-lg">
-                  <h3 className="text-xl font-semibold mb-4 text-accent">What You Get:</h3>
+                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 rounded-lg border border-emerald-200">
+                  <h3 className="text-xl font-semibold mb-4 text-emerald-700">What You Get:</h3>
                   <ul className="space-y-3 text-muted-foreground">
                     <li className="flex items-start gap-3">
-                      <span className="text-accent font-bold">✓</span>
+                      <span className="text-emerald-600 font-bold text-lg">✓</span>
                       <span>Access to verified profiles with detailed work history and skills</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="text-accent font-bold">✓</span>
+                      <span className="text-emerald-600 font-bold text-lg">✓</span>
                       <span>Candidates across all industries and experience levels</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="text-accent font-bold">✓</span>
+                      <span className="text-emerald-600 font-bold text-lg">✓</span>
                       <span>Direct contact information for immediate outreach</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="text-accent font-bold">✓</span>
+                      <span className="text-emerald-600 font-bold text-lg">✓</span>
                       <span>Pre-screened candidates ready for interviews</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="text-accent font-bold">✓</span>
+                      <span className="text-emerald-600 font-bold text-lg">✓</span>
                       <span>Ongoing support in the hiring process</span>
                     </li>
                   </ul>
