@@ -6,9 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader as Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import jobSeekersImg from "@/assets/job-seekers.jpg";
 import { Helmet } from "react-helmet-async";
@@ -18,46 +17,17 @@ const GetHired = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
-    dateOfBirth: "",
-    idNumber: "",
     email: "",
     phone: "",
     location: "",
     education: "",
     experience: "",
     skills: "",
-    jobCategory: "",
     desiredPosition: "",
-    customPosition: "",
     salary: "",
     availability: "",
     additionalInfo: "",
   });
-  const [idDocument, setIdDocument] = useState<File | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<string>("");
-
-  const jobCategories = [
-    "Technology & IT",
-    "Healthcare & Medical",
-    "Finance & Accounting",
-    "Sales & Marketing",
-    "Education & Training",
-    "Engineering",
-    "Hospitality & Tourism",
-    "Manufacturing & Production",
-    "Human Resources",
-    "Customer Service",
-    "Administration & Office",
-    "Construction & Trades",
-    "Legal",
-    "Media & Communications",
-    "Transportation & Logistics",
-    "Agriculture & Farming",
-    "Security & Safety",
-    "Real Estate",
-    "Retail & Wholesale",
-    "Others"
-  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -66,45 +36,11 @@ const GetHired = () => {
     });
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const maxSize = 5 * 1024 * 1024;
-      if (file.size > maxSize) {
-        toast({
-          title: "File Too Large",
-          description: "Please upload a file smaller than 5MB",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
-      if (!allowedTypes.includes(file.type)) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please upload a JPEG, PNG, or PDF file",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setIdDocument(file);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     // Validate required fields
-    if (!formData.fullName || !formData.dateOfBirth || !formData.idNumber || !formData.email || !formData.phone || !formData.jobCategory) {
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.desiredPosition) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields",
@@ -113,108 +49,44 @@ const GetHired = () => {
       return;
     }
 
-    // Validate that if "Others" is selected, custom position is filled
-    if (formData.jobCategory === "Others" && !formData.customPosition) {
-      toast({
-        title: "Missing Information",
-        description: "Please specify your desired job position",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validate ID document upload
-    if (!idDocument) {
-      toast({
-        title: "Missing Document",
-        description: "Please upload your ID document",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      let idDocumentUrl = "";
-
-      // Upload ID document to Supabase storage
-      if (idDocument) {
-        setUploadProgress("Uploading ID document...");
-        const fileExt = idDocument.name.split('.').pop();
-        const fileName = `${Date.now()}_${formData.idNumber}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        const { error: uploadError, data: uploadData } = await supabase.storage
-          .from('id-documents')
-          .upload(filePath, idDocument, {
-            cacheControl: '3600',
-            upsert: false
-          });
-
-        if (uploadError) {
-          console.error("Upload error:", uploadError);
-          throw new Error("Failed to upload ID document");
-        }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('id-documents')
-          .getPublicUrl(filePath);
-
-        idDocumentUrl = publicUrl;
-      }
-
-      setUploadProgress("Sending application...");
-
       // Call the edge function to send the application
       const { error } = await supabase.functions.invoke("send-job-application", {
-        body: {
-          ...formData,
-          idDocumentUrl,
-        },
+        body: formData,
       });
 
       if (error) throw error;
 
       toast({
         title: "Application Submitted!",
-        description: "We've received your application and will contact you within 24 hours. Check your email for confirmation.",
+        description: "We've received your application and will contact you within 24 hours.",
       });
 
       // Reset form
       setFormData({
         fullName: "",
-        dateOfBirth: "",
-        idNumber: "",
         email: "",
         phone: "",
         location: "",
         education: "",
         experience: "",
         skills: "",
-        jobCategory: "",
         desiredPosition: "",
-        customPosition: "",
         salary: "",
         availability: "",
         additionalInfo: "",
       });
-      setIdDocument(null);
-      setUploadProgress("");
-
-      // Reset file input
-      const fileInput = document.getElementById("idDocument") as HTMLInputElement;
-      if (fileInput) fileInput.value = "";
     } catch (error: any) {
       console.error("Error submitting application:", error);
       toast({
         title: "Submission Failed",
-        description: error.message || "There was an error submitting your application. Please try again.",
+        description: "There was an error submitting your application. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
-      setUploadProgress("");
     }
   };
 
@@ -265,53 +137,6 @@ const GetHired = () => {
                     placeholder="John Doe"
                     required
                   />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="dateOfBirth">Date of Birth *</Label>
-                    <Input
-                      id="dateOfBirth"
-                      name="dateOfBirth"
-                      type="date"
-                      value={formData.dateOfBirth}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="idNumber">Valid National ID / Passport / Driving License Number *</Label>
-                    <Input
-                      id="idNumber"
-                      name="idNumber"
-                      value={formData.idNumber}
-                      onChange={handleChange}
-                      placeholder="Enter your ID number"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="idDocument">Upload ID Document (National ID / Passport / Driving License) *</Label>
-                  <Input
-                    id="idDocument"
-                    name="idDocument"
-                    type="file"
-                    onChange={handleFileChange}
-                    accept="image/jpeg,image/jpg,image/png,application/pdf"
-                    required
-                    className="cursor-pointer"
-                  />
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Accepted formats: JPEG, PNG, PDF (Max size: 5MB)
-                  </p>
-                  {idDocument && (
-                    <p className="text-sm text-green-600 mt-2">
-                      ✓ {idDocument.name} selected
-                    </p>
-                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -394,52 +219,18 @@ const GetHired = () => {
 
               <div className="space-y-4">
                 <h2 className="text-xl font-semibold">Job Preferences</h2>
-
+                
                 <div>
-                  <Label htmlFor="jobCategory">Job Category *</Label>
-                  <Select
-                    value={formData.jobCategory}
-                    onValueChange={(value) => handleSelectChange("jobCategory", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a job category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {jobCategories.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="desiredPosition">Desired Job Position *</Label>
+                  <Input
+                    id="desiredPosition"
+                    name="desiredPosition"
+                    value={formData.desiredPosition}
+                    onChange={handleChange}
+                    placeholder="e.g., Software Developer, Accountant, Sales Manager"
+                    required
+                  />
                 </div>
-
-                {formData.jobCategory === "Others" && (
-                  <div>
-                    <Label htmlFor="customPosition">Specify Your Desired Job Position *</Label>
-                    <Input
-                      id="customPosition"
-                      name="customPosition"
-                      value={formData.customPosition}
-                      onChange={handleChange}
-                      placeholder="Enter your desired job position"
-                      required
-                    />
-                  </div>
-                )}
-
-                {formData.jobCategory && formData.jobCategory !== "Others" && (
-                  <div>
-                    <Label htmlFor="desiredPosition">Specific Job Position (Optional)</Label>
-                    <Input
-                      id="desiredPosition"
-                      name="desiredPosition"
-                      value={formData.desiredPosition}
-                      onChange={handleChange}
-                      placeholder="e.g., Senior Software Developer, Junior Accountant"
-                    />
-                  </div>
-                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -499,7 +290,7 @@ const GetHired = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {uploadProgress || "Submitting..."}
+                      Submitting...
                     </>
                   ) : (
                     "Submit Application"
