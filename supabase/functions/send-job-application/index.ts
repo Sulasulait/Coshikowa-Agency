@@ -1,7 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -142,14 +141,27 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     // Send email to employer
-    const emailResponse = await resend.emails.send({
-      from: "Coshikowa Agency <onboarding@resend.dev>",
-      to: ["sulaite256@gmail.com"],
-      subject: `New Job Application - ${appliedPosition} - ${applicationData.fullName}`,
-      html: emailHtml,
+    const emailResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Coshikowa Agency <onboarding@resend.dev>",
+        to: ["sulaite256@gmail.com"],
+        subject: `New Job Application - ${appliedPosition} - ${applicationData.fullName}`,
+        html: emailHtml,
+      }),
     });
 
-    console.log("Application email sent successfully:", emailResponse);
+    if (!emailResponse.ok) {
+      const error = await emailResponse.text();
+      console.error("Failed to send email to employer:", error);
+      throw new Error("Failed to send email to employer");
+    }
+
+    console.log("Application email sent successfully");
 
     // Send confirmation email to applicant
     const confirmationHtml = `
@@ -197,12 +209,25 @@ const handler = async (req: Request): Promise<Response> => {
       </div>
     `;
 
-    await resend.emails.send({
-      from: "Coshikowa Agency <onboarding@resend.dev>",
-      to: [applicationData.email],
-      subject: "Application Received - Coshikowa Agency",
-      html: confirmationHtml,
+    const confirmationResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Coshikowa Agency <onboarding@resend.dev>",
+        to: [applicationData.email],
+        subject: "Application Received - Coshikowa Agency",
+        html: confirmationHtml,
+      }),
     });
+
+    if (!confirmationResponse.ok) {
+      const error = await confirmationResponse.text();
+      console.error("Failed to send confirmation email:", error);
+      // Don't throw here, as the main email was sent successfully
+    }
 
     return new Response(
       JSON.stringify({ success: true }),
