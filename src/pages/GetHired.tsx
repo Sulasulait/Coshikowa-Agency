@@ -7,20 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, CalendarIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import jobSeekersImg from "@/assets/job-seekers.jpg";
 import { Helmet } from "react-helmet-async";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { callEdgeFunction } from "@/lib/api";
 
 const GetHired = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -34,6 +29,9 @@ const GetHired = () => {
     salary: "",
     availability: "",
     additionalInfo: "",
+    dobDay: "",
+    dobMonth: "",
+    dobYear: "",
   });
 
   const jobCategories = [
@@ -63,13 +61,11 @@ const GetHired = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Determine final position
-    const finalPosition = formData.desiredPosition === "Other" 
-      ? formData.customPosition 
+
+    const finalPosition = formData.desiredPosition === "Other"
+      ? formData.customPosition
       : formData.desiredPosition;
 
-    // Validate required fields
     if (!formData.fullName || !formData.email || !formData.phone || !finalPosition) {
       toast({
         title: "Missing Information",
@@ -82,10 +78,14 @@ const GetHired = () => {
     setIsLoading(true);
 
     try {
+      const dateOfBirth = formData.dobDay && formData.dobMonth && formData.dobYear
+        ? `${formData.dobDay}/${formData.dobMonth}/${formData.dobYear}`
+        : undefined;
+
       await callEdgeFunction('send-job-application', {
         ...formData,
         desiredPosition: finalPosition,
-        dateOfBirth: dateOfBirth ? format(dateOfBirth, "PPP") : undefined,
+        dateOfBirth,
       });
 
       toast({
@@ -93,7 +93,6 @@ const GetHired = () => {
         description: "We've received your application and will contact you within 24 hours.",
       });
 
-      // Reset form
       setFormData({
         fullName: "",
         email: "",
@@ -107,8 +106,10 @@ const GetHired = () => {
         salary: "",
         availability: "",
         additionalInfo: "",
+        dobDay: "",
+        dobMonth: "",
+        dobYear: "",
       });
-      setDateOfBirth(undefined);
     } catch (error: any) {
       console.error("Error submitting application:", error);
       toast({
@@ -129,13 +130,12 @@ const GetHired = () => {
         <meta name="keywords" content="get hired Kenya, job application Kenya, find employment, career opportunities Kenya, job registration" />
       </Helmet>
       <Navbar />
-      
-      {/* Header with Image */}
+
       <section className="relative h-64 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-accent/90 to-accent/70 z-10" />
-        <img 
-          src={jobSeekersImg} 
-          alt="Job seekers success" 
+        <img
+          src={jobSeekersImg}
+          alt="Job seekers success"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
@@ -149,10 +149,9 @@ const GetHired = () => {
           </div>
         </div>
       </section>
-      
+
       <main className="flex-1 py-12 bg-muted">
         <div className="container mx-auto px-4 max-w-3xl">
-
           <Card className="p-8 md:p-10 shadow-xl">
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-6">
@@ -160,7 +159,7 @@ const GetHired = () => {
                   <h2 className="text-2xl font-bold text-primary">Personal Information</h2>
                   <p className="text-sm text-muted-foreground mt-1">Tell us about yourself</p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="fullName" className="text-sm font-semibold">Full Name *</Label>
                   <Input
@@ -214,32 +213,68 @@ const GetHired = () => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold">Date of Birth</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !dateOfBirth && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateOfBirth ? format(dateOfBirth, "PPP") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={dateOfBirth}
-                        onSelect={setDateOfBirth}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div className="grid grid-cols-3 gap-3">
+                    <Select
+                      value={formData.dobDay}
+                      onValueChange={(value) => setFormData({...formData, dobDay: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Day" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                          <SelectItem key={day} value={day.toString().padStart(2, '0')}>
+                            {day}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <Select
+                      value={formData.dobMonth}
+                      onValueChange={(value) => setFormData({...formData, dobMonth: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Month" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[
+                          { value: '01', label: 'January' },
+                          { value: '02', label: 'February' },
+                          { value: '03', label: 'March' },
+                          { value: '04', label: 'April' },
+                          { value: '05', label: 'May' },
+                          { value: '06', label: 'June' },
+                          { value: '07', label: 'July' },
+                          { value: '08', label: 'August' },
+                          { value: '09', label: 'September' },
+                          { value: '10', label: 'October' },
+                          { value: '11', label: 'November' },
+                          { value: '12', label: 'December' },
+                        ].map((month) => (
+                          <SelectItem key={month.value} value={month.value}>
+                            {month.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <Select
+                      value={formData.dobYear}
+                      onValueChange={(value) => setFormData({...formData, dobYear: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 70 }, (_, i) => new Date().getFullYear() - 18 - i).map((year) => (
+                          <SelectItem key={year} value={year.toString()}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
@@ -248,7 +283,7 @@ const GetHired = () => {
                   <h2 className="text-2xl font-bold text-emerald-600">Professional Background</h2>
                   <p className="text-sm text-muted-foreground mt-1">Share your experience and skills</p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="education" className="text-sm font-semibold">Highest Education Level</Label>
                   <Input
@@ -289,7 +324,7 @@ const GetHired = () => {
                   <h2 className="text-2xl font-bold text-blue-600">Job Preferences</h2>
                   <p className="text-sm text-muted-foreground mt-1">What kind of role are you looking for?</p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="desiredPosition" className="text-sm font-semibold">Desired Job Position *</Label>
                   <Select

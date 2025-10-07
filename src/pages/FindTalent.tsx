@@ -5,21 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, Briefcase, CalendarIcon, Loader2 } from "lucide-react";
+import { Mail, Phone, Briefcase, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import employersImg from "@/assets/employers.jpg";
 import { Helmet } from "react-helmet";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { callEdgeFunction } from "@/lib/api";
 
 const FindTalent = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [formData, setFormData] = useState({
     companyName: "",
     contactPerson: "",
@@ -29,25 +25,23 @@ const FindTalent = () => {
     position: "",
     requirements: "",
     urgency: "",
+    jobCategory: "",
+    ageRange: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setIsLoading(true);
 
     try {
-      await callEdgeFunction('send-hiring-request', {
-        ...formData,
-        dateOfBirth: dateOfBirth ? format(dateOfBirth, "PPP") : undefined,
-      });
+      await callEdgeFunction('send-hiring-request', formData);
 
       toast({
         title: "Request Submitted!",
         description: "We'll get back to you within 24 hours with suitable candidates.",
       });
 
-      // Reset form
       setFormData({
         companyName: "",
         contactPerson: "",
@@ -57,8 +51,9 @@ const FindTalent = () => {
         position: "",
         requirements: "",
         urgency: "",
+        jobCategory: "",
+        ageRange: "",
       });
-      setDateOfBirth(undefined);
     } catch (error: any) {
       console.error("Error submitting hiring request:", error);
       toast({
@@ -79,14 +74,13 @@ const FindTalent = () => {
         <meta name="keywords" content="hire talent Kenya, recruitment agency Kenya, find employees Kenya, verified candidates, professional hiring" />
       </Helmet>
       <Navbar />
-      
+
       <main className="flex-1">
-        {/* Hero Section with Image */}
         <section className="relative h-80 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90 z-10" />
-          <img 
-            src={employersImg} 
-            alt="Employers hiring talent" 
+          <img
+            src={employersImg}
+            alt="Employers hiring talent"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
@@ -101,15 +95,14 @@ const FindTalent = () => {
           </div>
         </section>
 
-        {/* Main Content */}
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4 max-w-4xl">
             <Card className="p-8 md:p-10 mb-8 shadow-xl">
               <div className="text-center mb-10">
-                <div className="inline-block p-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-4">
+                <div className="inline-block p-4 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full mb-4">
                   <Briefcase className="h-12 w-12 text-white" />
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Submit Your Hiring Request</h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">Submit Your Hiring Request</h2>
                 <p className="text-muted-foreground text-lg">
                   Tell us about your hiring needs and we'll match you with qualified candidates
                 </p>
@@ -163,14 +156,36 @@ const FindTalent = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="industry" className="text-sm font-semibold">Industry *</Label>
-                    <Input
-                      id="industry"
+                    <Label htmlFor="jobCategory" className="text-sm font-semibold">Job Category / Industry *</Label>
+                    <Select
+                      value={formData.jobCategory}
+                      onValueChange={(value) => setFormData({...formData, jobCategory: value, industry: value})}
                       required
-                      value={formData.industry}
-                      onChange={(e) => setFormData({...formData, industry: e.target.value})}
-                      placeholder="e.g., IT, Healthcare, Finance"
-                    />
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select industry" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="IT & Technology">IT & Technology</SelectItem>
+                        <SelectItem value="Finance & Accounting">Finance & Accounting</SelectItem>
+                        <SelectItem value="Sales & Marketing">Sales & Marketing</SelectItem>
+                        <SelectItem value="Healthcare">Healthcare</SelectItem>
+                        <SelectItem value="Education">Education</SelectItem>
+                        <SelectItem value="Engineering">Engineering</SelectItem>
+                        <SelectItem value="Construction">Construction</SelectItem>
+                        <SelectItem value="Hospitality & Tourism">Hospitality & Tourism</SelectItem>
+                        <SelectItem value="Retail">Retail</SelectItem>
+                        <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                        <SelectItem value="Logistics & Supply Chain">Logistics & Supply Chain</SelectItem>
+                        <SelectItem value="Legal">Legal</SelectItem>
+                        <SelectItem value="Human Resources">Human Resources</SelectItem>
+                        <SelectItem value="Customer Service">Customer Service</SelectItem>
+                        <SelectItem value="Media & Communications">Media & Communications</SelectItem>
+                        <SelectItem value="Agriculture">Agriculture</SelectItem>
+                        <SelectItem value="Real Estate">Real Estate</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-2">
@@ -197,51 +212,41 @@ const FindTalent = () => {
                   />
                 </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="urgency" className="text-sm font-semibold">How Soon Do You Need to Hire? *</Label>
-                    <Input
-                      id="urgency"
-                      required
-                      value={formData.urgency}
-                      onChange={(e) => setFormData({...formData, urgency: e.target.value})}
-                      placeholder="e.g., Immediately, Within 2 weeks, Within a month"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="urgency" className="text-sm font-semibold">How Soon Do You Need to Hire? *</Label>
+                  <Input
+                    id="urgency"
+                    required
+                    value={formData.urgency}
+                    onChange={(e) => setFormData({...formData, urgency: e.target.value})}
+                    placeholder="e.g., Immediately, Within 2 weeks, Within a month"
+                  />
+                </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold">Date of Birth (Optional)</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !dateOfBirth && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {dateOfBirth ? format(dateOfBirth, "PPP") : <span>Pick a date</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={dateOfBirth}
-                          onSelect={setDateOfBirth}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                          className="pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ageRange" className="text-sm font-semibold">Preferred Age Range</Label>
+                  <Select
+                    value={formData.ageRange}
+                    onValueChange={(value) => setFormData({...formData, ageRange: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select age range" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="18-25">18-25 years</SelectItem>
+                      <SelectItem value="26-35">26-35 years</SelectItem>
+                      <SelectItem value="36-45">36-45 years</SelectItem>
+                      <SelectItem value="46-55">46-55 years</SelectItem>
+                      <SelectItem value="56+">56+ years</SelectItem>
+                      <SelectItem value="no-preference">No Preference</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -309,10 +314,10 @@ const FindTalent = () => {
                 <div className="bg-primary/5 p-6 rounded-lg">
                   <h3 className="text-xl font-semibold mb-4">Get Started Today</h3>
                   <p className="text-muted-foreground mb-6">
-                    Contact us to discuss your hiring needs and get access to our talent database. 
+                    Contact us to discuss your hiring needs and get access to our talent database.
                     We'll match you with the right candidates for your specific requirements.
                   </p>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 text-foreground">
                       <Mail className="h-5 w-5 text-primary" />
@@ -321,7 +326,7 @@ const FindTalent = () => {
                         sulaite256@gmail.com
                       </a>
                     </div>
-                    
+
                     <div className="flex items-center gap-3 text-foreground">
                       <Phone className="h-5 w-5 text-primary" />
                       <span className="font-medium">Phone:</span>
@@ -340,7 +345,7 @@ const FindTalent = () => {
 
                 <div className="text-center pt-6">
                   <p className="text-sm text-muted-foreground">
-                    Our team will respond within 24 hours to discuss your hiring needs and 
+                    Our team will respond within 24 hours to discuss your hiring needs and
                     provide you with suitable candidate profiles.
                   </p>
                 </div>
@@ -349,7 +354,6 @@ const FindTalent = () => {
           </div>
         </section>
 
-        {/* Why Choose Us */}
         <section className="py-16 bg-muted">
           <div className="container mx-auto px-4 max-w-5xl">
             <h2 className="text-3xl font-bold text-center mb-12">Why Employers Choose Us</h2>
