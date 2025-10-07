@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-// import { supabase } from "@/integrations/supabase/client";
+import { callEdgeFunction } from "@/lib/api";
 
 const FindTalent = () => {
   const { toast } = useToast();
@@ -37,26 +37,10 @@ const FindTalent = () => {
     setIsLoading(true);
 
     try {
-      // Temporarily call edge function directly until types are generated
-      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-      const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-      
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/send-hiring-request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({
-          ...formData,
-          dateOfBirth: dateOfBirth ? format(dateOfBirth, "PPP") : undefined,
-        }),
+      await callEdgeFunction('send-hiring-request', {
+        ...formData,
+        dateOfBirth: dateOfBirth ? format(dateOfBirth, "PPP") : undefined,
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to submit request');
-      }
 
       toast({
         title: "Request Submitted!",

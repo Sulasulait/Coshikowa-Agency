@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CalendarIcon } from "lucide-react";
-// import { supabase } from "@/integrations/supabase/client";
 import jobSeekersImg from "@/assets/job-seekers.jpg";
 import { Helmet } from "react-helmet-async";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -16,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { callEdgeFunction } from "@/lib/api";
 
 const GetHired = () => {
   const { toast } = useToast();
@@ -82,27 +82,11 @@ const GetHired = () => {
     setIsLoading(true);
 
     try {
-      // Temporarily call edge function directly until types are generated
-      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-      const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-      
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/send-job-application`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({
-          ...formData,
-          desiredPosition: finalPosition,
-          dateOfBirth: dateOfBirth ? format(dateOfBirth, "PPP") : undefined,
-        }),
+      await callEdgeFunction('send-job-application', {
+        ...formData,
+        desiredPosition: finalPosition,
+        dateOfBirth: dateOfBirth ? format(dateOfBirth, "PPP") : undefined,
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to submit application');
-      }
 
       toast({
         title: "Application Submitted!",
