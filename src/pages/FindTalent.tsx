@@ -5,14 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, Briefcase } from "lucide-react";
+import { Mail, Phone, Briefcase, CalendarIcon, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import employersImg from "@/assets/employers.jpg";
 import { Helmet } from "react-helmet";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 const FindTalent = () => {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [formData, setFormData] = useState({
     companyName: "",
     contactPerson: "",
@@ -27,22 +34,46 @@ const FindTalent = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    toast({
-      title: "Request Submitted!",
-      description: "We'll get back to you within 24 hours with suitable candidates.",
-    });
+    setIsLoading(true);
 
-    // Reset form
-    setFormData({
-      companyName: "",
-      contactPerson: "",
-      email: "",
-      phone: "",
-      industry: "",
-      position: "",
-      requirements: "",
-      urgency: "",
-    });
+    try {
+      // Call the edge function to send the hiring request
+      const { error } = await supabase.functions.invoke("send-hiring-request", {
+        body: {
+          ...formData,
+          dateOfBirth: dateOfBirth ? format(dateOfBirth, "PPP") : undefined,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Request Submitted!",
+        description: "We'll get back to you within 24 hours with suitable candidates.",
+      });
+
+      // Reset form
+      setFormData({
+        companyName: "",
+        contactPerson: "",
+        email: "",
+        phone: "",
+        industry: "",
+        position: "",
+        requirements: "",
+        urgency: "",
+      });
+      setDateOfBirth(undefined);
+    } catch (error: any) {
+      console.error("Error submitting hiring request:", error);
+      toast({
+        title: "Submission Failed",
+        description: "There was an error submitting your request. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -169,19 +200,61 @@ const FindTalent = () => {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="urgency">How Soon Do You Need to Hire? *</Label>
-                  <Input
-                    id="urgency"
-                    required
-                    value={formData.urgency}
-                    onChange={(e) => setFormData({...formData, urgency: e.target.value})}
-                    placeholder="e.g., Immediately, Within 2 weeks, Within a month"
-                  />
-                </div>
+                  <div>
+                    <Label htmlFor="urgency">How Soon Do You Need to Hire? *</Label>
+                    <Input
+                      id="urgency"
+                      required
+                      value={formData.urgency}
+                      onChange={(e) => setFormData({...formData, urgency: e.target.value})}
+                      placeholder="e.g., Immediately, Within 2 weeks, Within a month"
+                    />
+                  </div>
 
-                <Button type="submit" size="lg" className="w-full">
-                  Submit Hiring Request
+                  <div>
+                    <Label>Date of Birth (Optional)</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !dateOfBirth && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {dateOfBirth ? format(dateOfBirth, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={dateOfBirth}
+                          onSelect={setDateOfBirth}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit Hiring Request"
+                  )}
                 </Button>
               </form>
             </Card>

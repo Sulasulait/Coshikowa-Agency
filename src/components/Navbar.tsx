@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import logo from "@/assets/coshikowa-logo.png";
 
 const Navbar = () => {
   const location = useLocation();
@@ -22,9 +23,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">CA</span>
-            </div>
+            <img src={logo} alt="Coshikowa Agency" className="w-10 h-10 object-contain" />
             <span className="font-bold text-xl text-foreground">Coshikowa Agency</span>
           </Link>
 

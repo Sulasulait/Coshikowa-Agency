@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,6 +20,7 @@ interface JobApplicationRequest {
   salary?: string;
   availability?: string;
   additionalInfo?: string;
+  dateOfBirth?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -41,6 +41,7 @@ const handler = async (req: Request): Promise<Response> => {
       <p><strong>Email:</strong> ${applicationData.email}</p>
       <p><strong>Phone:</strong> ${applicationData.phone}</p>
       ${applicationData.location ? `<p><strong>Location:</strong> ${applicationData.location}</p>` : ''}
+      ${applicationData.dateOfBirth ? `<p><strong>Date of Birth:</strong> ${applicationData.dateOfBirth}</p>` : ''}
       
       <h2>Professional Background</h2>
       ${applicationData.education ? `<p><strong>Education:</strong> ${applicationData.education}</p>` : ''}
@@ -58,27 +59,46 @@ const handler = async (req: Request): Promise<Response> => {
       ` : ''}
     `;
 
-    // Send email to employer
-    const emailResponse = await resend.emails.send({
-      from: "Coshikowa Agency <onboarding@resend.dev>",
-      to: ["sulaite256@gmail.com"],
-      subject: `New Job Application - ${applicationData.desiredPosition}`,
-      html: emailHtml,
+    // Send email to employer using Resend API
+    const emailResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Coshikowa Agency <onboarding@resend.dev>",
+        to: ["sulaite256@gmail.com"],
+        subject: `New Job Application - ${applicationData.desiredPosition}`,
+        html: emailHtml,
+      }),
     });
 
-    console.log("Application email sent successfully:", emailResponse);
+    if (!emailResponse.ok) {
+      const error = await emailResponse.text();
+      throw new Error(`Failed to send email: ${error}`);
+    }
+
+    console.log("Application email sent successfully");
 
     // Send confirmation email to applicant
-    await resend.emails.send({
-      from: "Coshikowa Agency <onboarding@resend.dev>",
-      to: [applicationData.email],
-      subject: "Application Received - Coshikowa Agency",
-      html: `
-        <h1>Thank you for your application, ${applicationData.fullName}!</h1>
-        <p>We have received your job application for the position of <strong>${applicationData.desiredPosition}</strong>.</p>
-        <p>Our team will review your application and get back to you within 24 hours.</p>
-        <p>Best regards,<br>Coshikowa Agency Team</p>
-      `,
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Coshikowa Agency <onboarding@resend.dev>",
+        to: [applicationData.email],
+        subject: "Application Received - Coshikowa Agency",
+        html: `
+          <h1>Thank you for your application, ${applicationData.fullName}!</h1>
+          <p>We have received your job application for the position of <strong>${applicationData.desiredPosition}</strong>.</p>
+          <p>Our team will review your application and get back to you within 24 hours.</p>
+          <p>Best regards,<br>Coshikowa Agency Team</p>
+        `,
+      }),
     });
 
     return new Response(JSON.stringify({ success: true }), {

@@ -7,14 +7,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, CalendarIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import jobSeekersImg from "@/assets/job-seekers.jpg";
 import { Helmet } from "react-helmet-async";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 const GetHired = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -24,10 +30,29 @@ const GetHired = () => {
     experience: "",
     skills: "",
     desiredPosition: "",
+    customPosition: "",
     salary: "",
     availability: "",
     additionalInfo: "",
   });
+
+  const jobCategories = [
+    "Software Developer",
+    "Accountant",
+    "Sales Manager",
+    "Marketing Manager",
+    "Customer Service Representative",
+    "Administrative Assistant",
+    "Human Resources Manager",
+    "Graphic Designer",
+    "Data Analyst",
+    "Project Manager",
+    "Nurse",
+    "Teacher",
+    "Civil Engineer",
+    "Mechanical Engineer",
+    "Other",
+  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -39,8 +64,13 @@ const GetHired = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Determine final position
+    const finalPosition = formData.desiredPosition === "Other" 
+      ? formData.customPosition 
+      : formData.desiredPosition;
+
     // Validate required fields
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.desiredPosition) {
+    if (!formData.fullName || !formData.email || !formData.phone || !finalPosition) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields",
@@ -54,7 +84,11 @@ const GetHired = () => {
     try {
       // Call the edge function to send the application
       const { error } = await supabase.functions.invoke("send-job-application", {
-        body: formData,
+        body: {
+          ...formData,
+          desiredPosition: finalPosition,
+          dateOfBirth: dateOfBirth ? format(dateOfBirth, "PPP") : undefined,
+        },
       });
 
       if (error) throw error;
@@ -74,10 +108,12 @@ const GetHired = () => {
         experience: "",
         skills: "",
         desiredPosition: "",
+        customPosition: "",
         salary: "",
         availability: "",
         additionalInfo: "",
       });
+      setDateOfBirth(undefined);
     } catch (error: any) {
       console.error("Error submitting application:", error);
       toast({
@@ -177,6 +213,36 @@ const GetHired = () => {
                     placeholder="Nairobi, Kenya"
                   />
                 </div>
+
+                <div>
+                  <Label>Date of Birth</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dateOfBirth && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateOfBirth ? format(dateOfBirth, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateOfBirth}
+                        onSelect={setDateOfBirth}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -222,15 +288,37 @@ const GetHired = () => {
                 
                 <div>
                   <Label htmlFor="desiredPosition">Desired Job Position *</Label>
-                  <Input
-                    id="desiredPosition"
-                    name="desiredPosition"
+                  <Select
                     value={formData.desiredPosition}
-                    onChange={handleChange}
-                    placeholder="e.g., Software Developer, Accountant, Sales Manager"
+                    onValueChange={(value) => setFormData({...formData, desiredPosition: value})}
                     required
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a job category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {jobCategories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {formData.desiredPosition === "Other" && (
+                  <div>
+                    <Label htmlFor="customPosition">Specify Your Position *</Label>
+                    <Input
+                      id="customPosition"
+                      name="customPosition"
+                      value={formData.customPosition}
+                      onChange={handleChange}
+                      placeholder="Enter your desired position"
+                      required
+                    />
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
