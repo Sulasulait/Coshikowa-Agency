@@ -30,6 +30,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const applicationData: JobApplicationRequest = await req.json();
+    console.log("API Key length:", RESEND_API_KEY?.length || 0);
 
     const emailHtml = `
       <h1>New Job Application</h1>
