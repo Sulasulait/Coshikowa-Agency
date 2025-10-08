@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -11,9 +12,9 @@ import { Loader2 } from "lucide-react";
 import jobSeekersImg from "@/assets/job-seekers.jpg";
 import { Helmet } from "react-helmet-async";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { callEdgeFunction } from "@/lib/api";
 
 const GetHired = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -75,51 +76,19 @@ const GetHired = () => {
       return;
     }
 
-    setIsLoading(true);
+    const dateOfBirth = formData.dobDay && formData.dobMonth && formData.dobYear
+      ? `${formData.dobDay}/${formData.dobMonth}/${formData.dobYear}`
+      : undefined;
 
-    try {
-      const dateOfBirth = formData.dobDay && formData.dobMonth && formData.dobYear
-        ? `${formData.dobDay}/${formData.dobMonth}/${formData.dobYear}`
-        : undefined;
+    const submissionData = {
+      ...formData,
+      desiredPosition: finalPosition,
+      dateOfBirth,
+    };
 
-      await callEdgeFunction('send-job-application', {
-        ...formData,
-        desiredPosition: finalPosition,
-        dateOfBirth,
-      });
-
-      toast({
-        title: "Application Submitted!",
-        description: "We've received your application and will contact you within 24 hours.",
-      });
-
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        location: "",
-        education: "",
-        experience: "",
-        skills: "",
-        desiredPosition: "",
-        customPosition: "",
-        salary: "",
-        availability: "",
-        additionalInfo: "",
-        dobDay: "",
-        dobMonth: "",
-        dobYear: "",
-      });
-    } catch (error: any) {
-      console.error("Error submitting application:", error);
-      toast({
-        title: "Submission Failed",
-        description: "There was an error submitting your application. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    navigate("/payment-job-application", {
+      state: { formData: submissionData },
+    });
   };
 
   return (

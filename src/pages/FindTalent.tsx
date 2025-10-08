@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -6,14 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, Briefcase, Loader2 } from "lucide-react";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import employersImg from "@/assets/employers.jpg";
 import { Helmet } from "react-helmet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { callEdgeFunction } from "@/lib/api";
 
 const FindTalent = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,38 +33,18 @@ const FindTalent = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    setIsLoading(true);
-
-    try {
-      await callEdgeFunction('send-hiring-request', formData);
-
+    if (!formData.companyName || !formData.contactPerson || !formData.email || !formData.phone || !formData.position || !formData.requirements || !formData.urgency) {
       toast({
-        title: "Request Submitted!",
-        description: "We'll get back to you within 24 hours with suitable candidates.",
-      });
-
-      setFormData({
-        companyName: "",
-        contactPerson: "",
-        email: "",
-        phone: "",
-        industry: "",
-        position: "",
-        requirements: "",
-        urgency: "",
-        jobCategory: "",
-        ageRange: "",
-      });
-    } catch (error: any) {
-      console.error("Error submitting hiring request:", error);
-      toast({
-        title: "Submission Failed",
-        description: "There was an error submitting your request. Please try again.",
+        title: "Missing Information",
+        description: "Please fill in all required fields",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
+      return;
     }
+
+    navigate("/payment-hiring-request", {
+      state: { formData },
+    });
   };
 
   return (
