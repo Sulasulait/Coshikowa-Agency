@@ -1,9 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -30,27 +27,6 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const requestData: HiringRequest = await req.json();
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    const { error: dbError } = await supabase
-      .from('hiring_requests')
-      .insert({
-        company_name: requestData.companyName,
-        contact_person: requestData.contactPerson,
-        email: requestData.email,
-        phone: requestData.phone,
-        industry: requestData.industry,
-        position: requestData.position,
-        requirements: requestData.requirements,
-        urgency: requestData.urgency,
-      });
-
-    if (dbError) {
-      throw new Error(`Failed to save hiring request: ${JSON.stringify(dbError)}`);
-    }
-
-    console.log("Hiring request saved to database successfully");
 
     const emailHtml = `
       <h1>New Hiring Request</h1>

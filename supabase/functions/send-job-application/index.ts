@@ -1,9 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -33,31 +30,6 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const applicationData: JobApplicationRequest = await req.json();
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    const { error: dbError } = await supabase
-      .from('job_applications')
-      .insert({
-        full_name: applicationData.fullName,
-        email: applicationData.email,
-        phone: applicationData.phone,
-        location: applicationData.location || null,
-        education: applicationData.education || null,
-        experience: applicationData.experience || null,
-        skills: applicationData.skills || null,
-        desired_position: applicationData.desiredPosition,
-        salary: applicationData.salary || null,
-        availability: applicationData.availability || null,
-        additional_info: applicationData.additionalInfo || null,
-        date_of_birth: applicationData.dateOfBirth || null,
-      });
-
-    if (dbError) {
-      throw new Error(`Failed to save application: ${JSON.stringify(dbError)}`);
-    }
-
-    console.log("Application saved to database successfully");
 
     const emailHtml = `
       <h1>New Job Application</h1>
