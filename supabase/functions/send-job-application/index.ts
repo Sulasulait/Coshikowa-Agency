@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_USB4mTSP_GBpzjabwUuxzCX5Fpg6oy9XK";
+const API_KEY = "re_USB4mTSP_GBpzjabwUuxzCX5Fpg6oy9XK";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -30,7 +30,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const applicationData: JobApplicationRequest = await req.json();
-    console.log("API Key length:", RESEND_API_KEY?.length || 0);
+    console.log("Deployment v2 - API Key length:", API_KEY?.length || 0);
 
     const emailHtml = `
       <h1>New Job Application</h1>
@@ -62,7 +62,7 @@ const handler = async (req: Request): Promise<Response> => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
         from: "Coshikowa Agency <onboarding@resend.dev>",
@@ -83,7 +83,7 @@ const handler = async (req: Request): Promise<Response> => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
         from: "Coshikowa Agency <onboarding@resend.dev>",
