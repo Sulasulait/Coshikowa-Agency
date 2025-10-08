@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_USB4mTSP_GBpzjabwUuxzCX5Fpg6oy9XK";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
