@@ -66,8 +66,12 @@ const PaymentHiringRequest = () => {
   const onApprove = async (data: any) => {
     setIsProcessing(true);
     try {
+      navigate("/payment-success", {
+        state: { type: "hiring_request" },
+      });
+
       if (paymentId) {
-        const { error } = await supabase
+        supabase
           .from("payments")
           .update({
             payment_status: "completed",
@@ -75,15 +79,14 @@ const PaymentHiringRequest = () => {
             paypal_payer_id: data.payerID,
             completed_at: new Date().toISOString(),
           })
-          .eq("id", paymentId);
-
-        if (error) throw error;
+          .eq("id", paymentId)
+          .then(({ error }) => {
+            if (error) console.error("Error updating payment:", error);
+          });
       }
 
-      await callEdgeFunction("send-hiring-request", formData);
-
-      navigate("/payment-success", {
-        state: { type: "hiring_request" },
+      callEdgeFunction("send-hiring-request", formData).catch((error) => {
+        console.error("Error sending request:", error);
       });
     } catch (error: any) {
       console.error("Error processing payment:", error);

@@ -66,8 +66,12 @@ const PaymentJobApplication = () => {
   const onApprove = async (data: any) => {
     setIsProcessing(true);
     try {
+      navigate("/payment-success", {
+        state: { type: "job_application" },
+      });
+
       if (paymentId) {
-        const { error } = await supabase
+        supabase
           .from("payments")
           .update({
             payment_status: "completed",
@@ -75,15 +79,14 @@ const PaymentJobApplication = () => {
             paypal_payer_id: data.payerID,
             completed_at: new Date().toISOString(),
           })
-          .eq("id", paymentId);
-
-        if (error) throw error;
+          .eq("id", paymentId)
+          .then(({ error }) => {
+            if (error) console.error("Error updating payment:", error);
+          });
       }
 
-      await callEdgeFunction("send-job-application", formData);
-
-      navigate("/payment-success", {
-        state: { type: "job_application" },
+      callEdgeFunction("send-job-application", formData).catch((error) => {
+        console.error("Error sending application:", error);
       });
     } catch (error: any) {
       console.error("Error processing payment:", error);
