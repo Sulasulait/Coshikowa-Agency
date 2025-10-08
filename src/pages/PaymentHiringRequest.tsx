@@ -19,6 +19,7 @@ const PaymentHiringRequest = () => {
   const location = useLocation();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentId, setPaymentId] = useState<string | null>(null);
   const formData = location.state?.formData;
 
   useEffect(() => {
@@ -29,47 +30,55 @@ const PaymentHiringRequest = () => {
         variant: "destructive",
       });
       navigate("/find-talent");
+      return;
     }
+
+    const createPaymentRecord = async () => {
+      try {
+        const { data: payment, error } = await supabase
+          .from("payments")
+          .insert({
+            payment_type: "hiring_request",
+            amount_kes: AMOUNT_KES,
+            amount_usd: parseFloat(AMOUNT_USD),
+            payment_status: "pending",
+            form_data: formData,
+            email: formData.email,
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        setPaymentId(payment.id);
+      } catch (error) {
+        console.error("Error creating payment record:", error);
+        toast({
+          title: "Error",
+          description: "Failed to initialize payment. Please try again.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    createPaymentRecord();
   }, [formData, navigate, toast]);
-
-  const createOrder = async () => {
-    try {
-      const { data: payment, error } = await supabase
-        .from("payments")
-        .insert({
-          payment_type: "hiring_request",
-          amount_kes: AMOUNT_KES,
-          amount_usd: parseFloat(AMOUNT_USD),
-          payment_status: "pending",
-          form_data: formData,
-          email: formData.email,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return payment.id;
-    } catch (error) {
-      console.error("Error creating payment record:", error);
-      throw error;
-    }
-  };
 
   const onApprove = async (data: any) => {
     setIsProcessing(true);
     try {
-      const { error } = await supabase
-        .from("payments")
-        .update({
-          payment_status: "completed",
-          paypal_order_id: data.orderID,
-          paypal_payer_id: data.payerID,
-          completed_at: new Date().toISOString(),
-        })
-        .eq("paypal_order_id", data.orderID);
+      if (paymentId) {
+        const { error } = await supabase
+          .from("payments")
+          .update({
+            payment_status: "completed",
+            paypal_order_id: data.orderID,
+            paypal_payer_id: data.payerID,
+            completed_at: new Date().toISOString(),
+          })
+          .eq("id", paymentId);
 
-      if (error) throw error;
+        if (error) throw error;
+      }
 
       await callEdgeFunction("send-hiring-request", formData);
 
@@ -142,10 +151,10 @@ const PaymentHiringRequest = () => {
               </div>
             </div>
 
-            {isProcessing ? (
+            {isProcessing || !paymentId ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <span className="ml-2">Processing payment...</span>
+                <span className="ml-2">{isProcessing ? "Processing payment..." : "Preparing payment..."}</span>
               </div>
             ) : (
               <PayPalScriptProvider
@@ -155,7 +164,11 @@ const PaymentHiringRequest = () => {
                 }}
               >
                 <PayPalButtons
-                  style={{ layout: "vertical" }}
+                  style={{
+                    layout: "vertical",
+                    label: "pay"
+                  }}
+                  forceReRender={[AMOUNT_USD]}
                   createOrder={(data, actions) => {
                     return actions.order.create({
                       intent: "CAPTURE",
@@ -164,27 +177,13 @@ const PaymentHiringRequest = () => {
                           amount: {
                             currency_code: "USD",
                             value: AMOUNT_USD,
-                            breakdown: {
-                              item_total: {
-                                currency_code: "USD",
-                                value: AMOUNT_USD,
-                              },
-                            },
                           },
                           description: "Hiring Request Fee - Coshikowa Agency",
-                          items: [
-                            {
-                              name: "Hiring Request Fee",
-                              description: `Request for ${formData.position}`,
-                              unit_amount: {
-                                currency_code: "USD",
-                                value: AMOUNT_USD,
-                              },
-                              quantity: "1",
-                            },
-                          ],
                         },
                       ],
+                      application_context: {
+                        shipping_preference: "NO_SHIPPING",
+                      },
                     });
                   }}
                   onApprove={onApprove}

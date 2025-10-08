@@ -60,7 +60,7 @@ const GetHired = () => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const finalPosition = formData.desiredPosition === "Other"
