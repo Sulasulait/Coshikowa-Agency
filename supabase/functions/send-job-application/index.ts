@@ -33,29 +33,41 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Deployment v2 - API Key length:", API_KEY?.length || 0);
 
     const emailHtml = `
-      <h1>New Job Application</h1>
-      
-      <h2>Personal Information</h2>
-      <p><strong>Full Name:</strong> ${applicationData.fullName}</p>
-      <p><strong>Email:</strong> ${applicationData.email}</p>
-      <p><strong>Phone:</strong> ${applicationData.phone}</p>
-      ${applicationData.location ? `<p><strong>Location:</strong> ${applicationData.location}</p>` : ''}
-      ${applicationData.dateOfBirth ? `<p><strong>Date of Birth:</strong> ${applicationData.dateOfBirth}</p>` : ''}
-      
-      <h2>Professional Background</h2>
-      ${applicationData.education ? `<p><strong>Education:</strong> ${applicationData.education}</p>` : ''}
-      ${applicationData.experience ? `<p><strong>Experience:</strong> ${applicationData.experience}</p>` : ''}
-      ${applicationData.skills ? `<p><strong>Skills:</strong> ${applicationData.skills}</p>` : ''}
-      
-      <h2>Job Preferences</h2>
-      <p><strong>Desired Position:</strong> ${applicationData.desiredPosition}</p>
-      ${applicationData.salary ? `<p><strong>Expected Salary:</strong> KSH ${applicationData.salary}</p>` : ''}
-      ${applicationData.availability ? `<p><strong>Availability:</strong> ${applicationData.availability}</p>` : ''}
-      
-      ${applicationData.additionalInfo ? `
-        <h2>Additional Information</h2>
-        <p>${applicationData.additionalInfo}</p>
-      ` : ''}
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="text-align: center; padding: 20px; background-color: #f8f9fa;">
+          <img src="https://i.ibb.co/SwJPbKH/coshikowa-logo.png" alt="Coshikowa Agency" style="max-width: 200px; height: auto;" />
+        </div>
+
+        <div style="padding: 30px; background-color: white;">
+          <h1 style="color: #059669; border-bottom: 2px solid #059669; padding-bottom: 10px;">New Job Application</h1>
+
+          <h2 style="color: #0284c7; margin-top: 25px;">Personal Information</h2>
+          <p><strong>Full Name:</strong> ${applicationData.fullName}</p>
+          <p><strong>Email:</strong> ${applicationData.email}</p>
+          <p><strong>Phone:</strong> ${applicationData.phone}</p>
+          ${applicationData.location ? `<p><strong>Location:</strong> ${applicationData.location}</p>` : ''}
+          ${applicationData.dateOfBirth ? `<p><strong>Date of Birth:</strong> ${applicationData.dateOfBirth}</p>` : ''}
+
+          <h2 style="color: #0284c7; margin-top: 25px;">Professional Background</h2>
+          ${applicationData.education ? `<p><strong>Education:</strong> ${applicationData.education}</p>` : ''}
+          ${applicationData.experience ? `<p><strong>Experience:</strong> ${applicationData.experience}</p>` : ''}
+          ${applicationData.skills ? `<p><strong>Skills:</strong> ${applicationData.skills}</p>` : ''}
+
+          <h2 style="color: #0284c7; margin-top: 25px;">Job Preferences</h2>
+          <p><strong>Desired Position:</strong> ${applicationData.desiredPosition}</p>
+          ${applicationData.salary ? `<p><strong>Expected Salary:</strong> KSH ${applicationData.salary}</p>` : ''}
+          ${applicationData.availability ? `<p><strong>Availability:</strong> ${applicationData.availability}</p>` : ''}
+
+          ${applicationData.additionalInfo ? `
+            <h2 style="color: #0284c7; margin-top: 25px;">Additional Information</h2>
+            <p>${applicationData.additionalInfo}</p>
+          ` : ''}
+        </div>
+
+        <div style="text-align: center; padding: 20px; background-color: #f8f9fa; color: #6b7280; font-size: 12px;">
+          <p>© 2025 Coshikowa Agency. All rights reserved.</p>
+        </div>
+      </div>
     `;
 
     const emailResponse = await fetch("https://api.resend.com/emails", {
@@ -90,10 +102,22 @@ const handler = async (req: Request): Promise<Response> => {
         to: [applicationData.email],
         subject: "Application Received - Coshikowa Agency",
         html: `
-          <h1>Thank you for your application, ${applicationData.fullName}!</h1>
-          <p>We have received your job application for the position of <strong>${applicationData.desiredPosition}</strong>.</p>
-          <p>Our team will review your application and get back to you within 24 hours.</p>
-          <p>Best regards,<br>Coshikowa Agency Team</p>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="text-align: center; padding: 20px; background-color: #f8f9fa;">
+              <img src="https://i.ibb.co/SwJPbKH/coshikowa-logo.png" alt="Coshikowa Agency" style="max-width: 200px; height: auto;" />
+            </div>
+
+            <div style="padding: 30px; background-color: white;">
+              <h1 style="color: #059669;">Thank you for your application, ${applicationData.fullName}!</h1>
+              <p style="font-size: 16px; line-height: 1.6;">We have received your job application for the position of <strong>${applicationData.desiredPosition}</strong>.</p>
+              <p style="font-size: 16px; line-height: 1.6;">Our team will review your application and get back to you within 24 hours.</p>
+              <p style="font-size: 16px; line-height: 1.6; margin-top: 30px;">Best regards,<br><strong>Coshikowa Agency Team</strong></p>
+            </div>
+
+            <div style="text-align: center; padding: 20px; background-color: #f8f9fa; color: #6b7280; font-size: 12px;">
+              <p>© 2025 Coshikowa Agency. All rights reserved.</p>
+            </div>
+          </div>
         `,
       }),
     });
