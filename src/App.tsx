@@ -14,6 +14,7 @@ import RefundPolicy from "./pages/RefundPolicy";
 import PaymentJobApplication from "./pages/PaymentJobApplication";
 import PaymentHiringRequest from "./pages/PaymentHiringRequest";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import AdminPayments from "./pages/AdminPayments";
 import NotFound from "./pages/NotFound";
 import { HelmetProvider } from "react-helmet-async";
 
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/payment-job-application" element={<PaymentJobApplication />} />
             <Route path="/payment-hiring-request" element={<PaymentHiringRequest />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/admin/payments" element={<AdminPayments />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

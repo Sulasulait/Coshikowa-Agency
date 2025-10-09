@@ -8,6 +8,8 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { callEdgeFunction } from "@/lib/api";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ManualPaymentOption } from "@/components/ManualPaymentOption";
 
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "test";
 const KES_TO_USD_RATE = 0.0078;
@@ -20,6 +22,7 @@ const PaymentJobApplication = () => {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [paymentSubmitted, setPaymentSubmitted] = useState(false);
   const formData = location.state?.formData;
 
   useEffect(() => {
@@ -162,46 +165,72 @@ const PaymentJobApplication = () => {
               </div>
             </div>
 
-            {isProcessing || !paymentId ? (
+            {paymentSubmitted ? (
+              <Card className="p-8 text-center">
+                <div className="bg-green-50 text-green-700 p-6 rounded-lg">
+                  <h3 className="font-semibold text-lg mb-2">Payment Proof Submitted</h3>
+                  <p className="text-sm">
+                    Your payment is under review. We'll process your application and contact you once approved (usually within 24 hours).
+                  </p>
+                </div>
+              </Card>
+            ) : isProcessing || !paymentId ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 <span className="ml-2">{isProcessing ? "Processing payment..." : "Preparing payment..."}</span>
               </div>
             ) : (
-              <PayPalScriptProvider
-                options={{
-                  clientId: PAYPAL_CLIENT_ID,
-                  currency: "USD",
-                }}
-              >
-                <PayPalButtons
-                  style={{
-                    layout: "vertical",
-                    label: "pay"
-                  }}
-                  forceReRender={[AMOUNT_USD]}
-                  createOrder={(data, actions) => {
-                    return actions.order.create({
-                      intent: "CAPTURE",
-                      purchase_units: [
-                        {
-                          amount: {
-                            currency_code: "USD",
-                            value: AMOUNT_USD,
+              <Tabs defaultValue="paypal" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="paypal">PayPal</TabsTrigger>
+                  <TabsTrigger value="manual">M-Pesa / Bank</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="paypal">
+                  <PayPalScriptProvider
+                    options={{
+                      clientId: PAYPAL_CLIENT_ID,
+                      currency: "USD",
+                    }}
+                  >
+                    <PayPalButtons
+                      style={{
+                        layout: "vertical",
+                        label: "pay"
+                      }}
+                      forceReRender={[AMOUNT_USD]}
+                      createOrder={(data, actions) => {
+                        return actions.order.create({
+                          intent: "CAPTURE",
+                          purchase_units: [
+                            {
+                              amount: {
+                                currency_code: "USD",
+                                value: AMOUNT_USD,
+                              },
+                              description: "Job Application Fee - Coshikowa Agency",
+                            },
+                          ],
+                          application_context: {
+                            shipping_preference: "NO_SHIPPING",
                           },
-                          description: "Job Application Fee - Coshikowa Agency",
-                        },
-                      ],
-                      application_context: {
-                        shipping_preference: "NO_SHIPPING",
-                      },
-                    });
-                  }}
-                  onApprove={onApprove}
-                  onCancel={onCancel}
-                  onError={onError}
-                />
-              </PayPalScriptProvider>
+                        });
+                      }}
+                      onApprove={onApprove}
+                      onCancel={onCancel}
+                      onError={onError}
+                    />
+                  </PayPalScriptProvider>
+                </TabsContent>
+
+                <TabsContent value="manual">
+                  <ManualPaymentOption
+                    paymentId={paymentId}
+                    amountKES={AMOUNT_KES}
+                    onPaymentSubmitted={() => setPaymentSubmitted(true)}
+                  />
+                </TabsContent>
+              </Tabs>
             )}
 
             <div className="mt-6 text-center text-sm text-muted-foreground">
