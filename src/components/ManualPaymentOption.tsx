@@ -7,17 +7,20 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2, Upload, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { callEdgeFunction } from "@/lib/api";
 
 interface ManualPaymentOptionProps {
   paymentId: string;
   amountKES: number;
   onPaymentSubmitted: () => void;
+  formData?: any;
 }
 
 export const ManualPaymentOption = ({
   paymentId,
   amountKES,
   onPaymentSubmitted,
+  formData,
 }: ManualPaymentOptionProps) => {
   const { toast } = useToast();
   const [paymentMethod, setPaymentMethod] = useState<"mpesa" | "bank_transfer">("mpesa");
@@ -108,6 +111,15 @@ export const ManualPaymentOption = ({
         .eq("id", paymentId);
 
       if (updateError) throw updateError;
+
+      await callEdgeFunction("send-payment-proof-notification", {
+        paymentId,
+        paymentProofUrl: urlData.publicUrl,
+        paymentMethod,
+        email: formData?.email || "N/A",
+      }).catch((error) => {
+        console.error("Error sending notification:", error);
+      });
 
       toast({
         title: "Payment proof submitted",
@@ -226,7 +238,7 @@ export const ManualPaymentOption = ({
         </Button>
 
         <p className="text-xs text-center text-muted-foreground">
-          Your application will be submitted after admin approval (usually within 24 hours)
+          Your application will be submitted after admin approval (usually within 30 minutes)
         </p>
       </div>
     </Card>

@@ -171,7 +171,7 @@ const PaymentHiringRequest = () => {
                 <div className="bg-green-50 text-green-700 p-6 rounded-lg">
                   <h3 className="font-semibold text-lg mb-2">Payment Proof Submitted</h3>
                   <p className="text-sm">
-                    Your payment is under review. We'll process your hiring request and contact you once approved (usually within 24 hours).
+                    Your payment is under review. We'll process your hiring request and contact you once approved (usually within 30 minutes).
                   </p>
                 </div>
               </Card>
@@ -229,6 +229,7 @@ const PaymentHiringRequest = () => {
                     paymentId={paymentId}
                     amountKES={AMOUNT_KES}
                     onPaymentSubmitted={() => setPaymentSubmitted(true)}
+                    formData={formData}
                   />
                 </TabsContent>
               </Tabs>
