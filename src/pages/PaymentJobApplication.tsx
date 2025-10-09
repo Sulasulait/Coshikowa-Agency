@@ -110,9 +110,18 @@ const PaymentJobApplication = () => {
 
   const onError = (err: any) => {
     console.error("PayPal Error:", err);
+
+    let errorMessage = "There was an error processing your payment. Please try again.";
+
+    if (err?.message?.includes("PAYEE_ACCOUNT_RESTRICTED")) {
+      errorMessage = "Payment system is currently under maintenance. Please contact support at support@coshikowa.com or try again later.";
+    } else if (err?.message?.includes("UNPROCESSABLE_ENTITY")) {
+      errorMessage = "Unable to process payment at this time. Please contact support for assistance.";
+    }
+
     toast({
       title: "Payment Error",
-      description: "There was an error processing your payment. Please try again.",
+      description: errorMessage,
       variant: "destructive",
     });
   };
