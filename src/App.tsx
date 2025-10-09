@@ -8,6 +8,7 @@ import GetHired from "./pages/GetHired";
 import FindTalent from "./pages/FindTalent";
 import HowItWorks from "./pages/HowItWorks";
 import About from "./pages/About";
+import JobOpenings from "./pages/JobOpenings";
 import LegalDisclaimer from "./pages/LegalDisclaimer";
 import RefundPolicy from "./pages/RefundPolicy";
 import PaymentJobApplication from "./pages/PaymentJobApplication";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/find-talent" element={<FindTalent />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/about" element={<About />} />
+            <Route path="/job-openings" element={<JobOpenings />} />
             <Route path="/legal-disclaimer" element={<LegalDisclaimer />} />
             <Route path="/refund-policy" element={<RefundPolicy />} />
             <Route path="/payment-job-application" element={<PaymentJobApplication />} />

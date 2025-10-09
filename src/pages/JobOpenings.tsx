@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Briefcase, MapPin, DollarSign, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 interface JobOpening {
   id: string;
@@ -111,3 +113,17 @@ export const JobOpeningsSection = () => {
     </section>
   );
 };
+
+const JobOpenings = () => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        <JobOpeningsSection />
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default JobOpenings;
