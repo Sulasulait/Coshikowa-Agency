@@ -191,12 +191,12 @@ const AdminPayments = () => {
         </p>
         {payment.payment_type === "job_application" && payment.form_data?.fullName && (
           <p className="text-sm">
-            <span className="font-medium">Name:</span> {payment.form_data.fullName}
+            <span className="font-medium">Name:</span> {String(payment.form_data.fullName)}
           </p>
         )}
         {payment.payment_type === "hiring_request" && payment.form_data?.companyName && (
           <p className="text-sm">
-            <span className="font-medium">Company:</span> {payment.form_data.companyName}
+            <span className="font-medium">Company:</span> {String(payment.form_data.companyName)}
           </p>
         )}
       </div>

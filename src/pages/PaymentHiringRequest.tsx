@@ -49,9 +49,10 @@ const PaymentHiringRequest = () => {
             email: formData.email,
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
+        if (!payment) throw new Error("Failed to create payment record");
         setPaymentId(payment.id);
       } catch (error) {
         console.error("Error creating payment record:", error);
