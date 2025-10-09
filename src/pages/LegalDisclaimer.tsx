@@ -1,7 +1,8 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
-import employersImg from "@/assets/employers.jpg";
+
+const employersImg = "https://images.pexels.com/photos/3184639/pexels-photo-3184639.jpeg";
 
 const LegalDisclaimer = () => {
   return (
@@ -11,10 +12,11 @@ const LegalDisclaimer = () => {
       {/* Header with Image */}
       <section className="relative h-64 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/70 z-10" />
-        <img 
-          src={employersImg} 
-          alt="Legal documentation" 
+        <img
+          src={employersImg}
+          alt="Legal documentation"
           className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
         />
         <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
           <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground">

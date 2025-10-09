@@ -1,7 +1,8 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
-import jobSeekersImg from "@/assets/job-seekers.jpg";
+
+const jobSeekersImg = "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg";
 
 const RefundPolicy = () => {
   return (
@@ -11,10 +12,11 @@ const RefundPolicy = () => {
       {/* Header with Image */}
       <section className="relative h-64 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-accent/90 to-accent/70 z-10" />
-        <img 
-          src={jobSeekersImg} 
-          alt="Refund policy" 
+        <img
+          src={jobSeekersImg}
+          alt="Refund policy"
           className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
         />
         <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
           <h1 className="text-4xl md:text-5xl font-bold text-accent-foreground">

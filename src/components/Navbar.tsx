@@ -1,8 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Briefcase } from "lucide-react";
 import { useState } from "react";
-import logo from "@/assets/coshikowa-logo.png";
 
 const Navbar = () => {
   const location = useLocation();
@@ -22,8 +21,9 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center">
-            <img src={logo} alt="Coshikowa Agency" className="h-12 w-auto object-contain" />
+          <Link to="/" className="flex items-center gap-2">
+            <Briefcase className="h-8 w-8 text-blue-600" />
+            <span className="text-xl font-bold">Coshikowa Agency</span>
           </Link>
 
           {/* Desktop Navigation */}

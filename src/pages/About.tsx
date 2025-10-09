@@ -2,8 +2,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Target, Heart, Zap } from "lucide-react";
-import heroBackground from "@/assets/hero-background.jpg";
 import { Helmet } from "react-helmet-async";
+
+const heroBackground = "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg";
 
 const About = () => {
   return (
@@ -19,10 +20,11 @@ const About = () => {
         {/* Hero Section with Image */}
         <section className="relative h-80 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90 z-10" />
-          <img 
-            src={heroBackground} 
-            alt="About Coshikowa Agency" 
+          <img
+            src={heroBackground}
+            alt="About Coshikowa Agency"
             className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
           />
           <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
             <div className="text-center w-full">

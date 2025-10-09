@@ -4,11 +4,12 @@ import { Card } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Briefcase, Users, Shield, Zap } from "lucide-react";
-import jobSeekersImg from "@/assets/job-seekers.jpg";
-import employersImg from "@/assets/employers.jpg";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { JobOpeningsSection } from "./JobOpenings";
 import { Helmet } from "react-helmet";
+
+const jobSeekersImg = "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg";
+const employersImg = "https://images.pexels.com/photos/3184639/pexels-photo-3184639.jpeg";
 
 const Index = () => {
   return (
@@ -147,10 +148,11 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <img 
-                  src={jobSeekersImg} 
-                  alt="Job seekers celebrating success" 
+                <img
+                  src={jobSeekersImg}
+                  alt="Job seekers celebrating success"
                   className="w-full rounded-lg shadow-lg"
+                  loading="lazy"
                 />
               </div>
               <div>
@@ -183,10 +185,11 @@ const Index = () => {
 
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <img 
-                  src={employersImg} 
-                  alt="Employers reviewing candidates" 
+                <img
+                  src={employersImg}
+                  alt="Employers reviewing candidates"
                   className="w-full rounded-lg shadow-lg"
+                  loading="lazy"
                 />
               </div>
               <div>

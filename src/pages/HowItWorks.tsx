@@ -4,8 +4,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { CheckCircle2, CreditCard, FileText, Users } from "lucide-react";
-import heroBackground from "@/assets/hero-background.jpg";
 import { Helmet } from "react-helmet-async";
+
+const heroBackground = "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg";
 
 const HowItWorks = () => {
   return (
@@ -21,10 +22,11 @@ const HowItWorks = () => {
         {/* Hero Section with Image */}
         <section className="relative h-64 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90 z-10" />
-          <img 
-            src={heroBackground} 
-            alt="How it works" 
+          <img
+            src={heroBackground}
+            alt="How it works"
             className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
           />
           <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
             <div className="text-center w-full">

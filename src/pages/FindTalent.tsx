@@ -9,9 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, Briefcase, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import employersImg from "@/assets/employers.jpg";
 import { Helmet } from "react-helmet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const employersImg = "https://images.pexels.com/photos/3184639/pexels-photo-3184639.jpeg";
 
 const FindTalent = () => {
   const navigate = useNavigate();
@@ -63,6 +64,7 @@ const FindTalent = () => {
             src={employersImg}
             alt="Employers hiring talent"
             className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
           />
           <div className="container mx-auto px-4 relative z-20 h-full flex items-center">
             <div className="text-center w-full">
