@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import type { CarouselApi } from "@/components/ui/carousel";
 
 const carouselImages = [
   { src: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg", alt: "Professional team collaboration" },
@@ -8,7 +9,7 @@ const carouselImages = [
 ];
 
 export const HeroCarousel = () => {
-  const [api, setApi] = useState<any>();
+  const [api, setApi] = useState<CarouselApi>();
 
   useEffect(() => {
     if (!api) return;

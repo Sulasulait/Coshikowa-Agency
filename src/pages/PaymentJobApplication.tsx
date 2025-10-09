@@ -66,7 +66,7 @@ const PaymentJobApplication = () => {
     createPaymentRecord();
   }, [formData, navigate, toast]);
 
-  const onApprove = async (data: any) => {
+  const onApprove = async (data: { orderID: string; payerID: string }) => {
     setIsProcessing(true);
     try {
       navigate("/payment-success", {
@@ -91,7 +91,7 @@ const PaymentJobApplication = () => {
       callEdgeFunction("send-job-application", formData).catch((error) => {
         console.error("Error sending application:", error);
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error processing payment:", error);
       toast({
         title: "Payment Processing Error",
@@ -111,7 +111,7 @@ const PaymentJobApplication = () => {
     navigate("/get-hired");
   };
 
-  const onError = (err: any) => {
+  const onError = (err: { message?: string }) => {
     console.error("PayPal Error:", err);
 
     let errorMessage = "There was an error processing your payment. Please try again.";

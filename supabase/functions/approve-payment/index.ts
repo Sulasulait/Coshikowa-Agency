@@ -286,7 +286,7 @@ Deno.serve(async (req: Request) => {
         headers: { "Content-Type": "text/html" },
       }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error:", error);
     return new Response(
       `<!DOCTYPE html>
@@ -303,7 +303,7 @@ Deno.serve(async (req: Request) => {
           <div class="container">
             <h1 class="error">Error</h1>
             <p>An error occurred while processing the approval.</p>
-            <p style="color: #6b7280; font-size: 14px;">${error.message}</p>
+            <p style="color: #6b7280; font-size: 14px;">${error instanceof Error ? error.message : String(error)}</p>
           </div>
         </body>
       </html>`,

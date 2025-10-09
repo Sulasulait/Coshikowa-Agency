@@ -28,7 +28,7 @@ interface Payment {
   payment_status: string;
   payment_proof_url: string | null;
   email: string;
-  form_data: any;
+  form_data: Record<string, unknown>;
   admin_notes: string | null;
   created_at: string;
 }
@@ -44,6 +44,7 @@ const AdminPayments = () => {
 
   useEffect(() => {
     fetchPayments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPayments = async () => {
@@ -56,7 +57,7 @@ const AdminPayments = () => {
 
       if (error) throw error;
       setPayments(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching payments:", error);
       toast({
         title: "Error",
@@ -98,7 +99,7 @@ const AdminPayments = () => {
       setSelectedPayment(null);
       setAdminNotes("");
       fetchPayments();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error approving payment:", error);
       toast({
         title: "Error",
@@ -142,7 +143,7 @@ const AdminPayments = () => {
       setSelectedPayment(null);
       setAdminNotes("");
       fetchPayments();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error rejecting payment:", error);
       toast({
         title: "Error",

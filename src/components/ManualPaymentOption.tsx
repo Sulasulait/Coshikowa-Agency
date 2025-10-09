@@ -13,7 +13,7 @@ interface ManualPaymentOptionProps {
   paymentId: string;
   amountKES: number;
   onPaymentSubmitted: () => void;
-  formData?: any;
+  formData?: Record<string, unknown>;
 }
 
 export const ManualPaymentOption = ({
@@ -127,7 +127,7 @@ export const ManualPaymentOption = ({
       });
 
       onPaymentSubmitted();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error uploading payment proof:", error);
       toast({
         title: "Upload failed",

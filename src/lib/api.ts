@@ -4,7 +4,7 @@
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-export async function callEdgeFunction(functionName: string, body: any) {
+export async function callEdgeFunction(functionName: string, body: Record<string, unknown>) {
   const response = await fetch(`${SUPABASE_URL}/functions/v1/${functionName}`, {
     method: 'POST',
     headers: {
