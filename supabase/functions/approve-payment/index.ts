@@ -25,16 +25,18 @@ Deno.serve(async (req: Request) => {
         <html>
           <head>
             <meta charset="UTF-8">
-            <meta http-equiv="refresh" content="0;url=${frontendUrl}/?error=no-token">
-            <title>Redirecting...</title>
+            <title>Invalid Request</title>
           </head>
           <body>
-            <p>Redirecting...</p>
+            <p>Invalid request. Redirecting...</p>
+            <script>
+              window.location.href = '${frontendUrl}/?error=no-token';
+            </script>
           </body>
         </html>`,
         {
           status: 200,
-          headers: { "Content-Type": "text/html" },
+          headers: { "Content-Type": "text/html; charset=utf-8" },
         }
       );
     }
@@ -60,16 +62,18 @@ Deno.serve(async (req: Request) => {
         <html>
           <head>
             <meta charset="UTF-8">
-            <meta http-equiv="refresh" content="0;url=${frontendUrl}/?error=invalid-token">
-            <title>Redirecting...</title>
+            <title>Invalid Token</title>
           </head>
           <body>
-            <p>Redirecting...</p>
+            <p>Invalid token. Redirecting...</p>
+            <script>
+              window.location.href = '${frontendUrl}/?error=invalid-token';
+            </script>
           </body>
         </html>`,
         {
           status: 200,
-          headers: { "Content-Type": "text/html" },
+          headers: { "Content-Type": "text/html; charset=utf-8" },
         }
       );
     }
@@ -80,16 +84,18 @@ Deno.serve(async (req: Request) => {
         <html>
           <head>
             <meta charset="UTF-8">
-            <meta http-equiv="refresh" content="0;url=${frontendUrl}/?already-approved=true">
-            <title>Redirecting...</title>
+            <title>Already Approved</title>
           </head>
           <body>
-            <p>Redirecting...</p>
+            <p>Already approved. Redirecting...</p>
+            <script>
+              window.location.href = '${frontendUrl}/?already-approved=true';
+            </script>
           </body>
         </html>`,
         {
           status: 200,
-          headers: { "Content-Type": "text/html" },
+          headers: { "Content-Type": "text/html; charset=utf-8" },
         }
       );
     }
@@ -182,16 +188,59 @@ Deno.serve(async (req: Request) => {
       <html>
         <head>
           <meta charset="UTF-8">
-          <meta http-equiv="refresh" content="0;url=${frontendUrl}/?approved=true&type=${encodeURIComponent(payment.payment_type)}&amount=${encodeURIComponent(payment.amount_kes)}">
-          <title>Redirecting...</title>
+          <title>Payment Approved</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              min-height: 100vh;
+              margin: 0;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+            .container {
+              background: white;
+              padding: 40px;
+              border-radius: 20px;
+              text-align: center;
+              box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+              max-width: 500px;
+            }
+            .icon {
+              width: 80px;
+              height: 80px;
+              background: #10b981;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 20px;
+              font-size: 50px;
+              color: white;
+            }
+            h1 { color: #059669; margin: 20px 0; }
+            p { color: #6b7280; line-height: 1.6; }
+          </style>
         </head>
         <body>
-          <p>Redirecting...</p>
+          <div class="container">
+            <div class="icon">✓</div>
+            <h1>Payment Approved!</h1>
+            <p>The payment has been approved successfully.</p>
+            <p>The application has been sent to your email.</p>
+            <p style="margin-top: 30px; font-size: 14px;">Redirecting to homepage...</p>
+          </div>
+          <script>
+            setTimeout(function() {
+              window.location.href = '${frontendUrl}/?approved=true&type=${encodeURIComponent(payment.payment_type)}&amount=${encodeURIComponent(payment.amount_kes)}';
+            }, 2000);
+          </script>
         </body>
       </html>`,
       {
         status: 200,
-        headers: { "Content-Type": "text/html" },
+        headers: { "Content-Type": "text/html; charset=utf-8" },
       }
     );
   } catch (error: unknown) {
@@ -202,16 +251,18 @@ Deno.serve(async (req: Request) => {
       <html>
         <head>
           <meta charset="UTF-8">
-          <meta http-equiv="refresh" content="0;url=${frontendUrl}/?error=processing-failed">
-          <title>Redirecting...</title>
+          <title>Error</title>
         </head>
         <body>
-          <p>Redirecting...</p>
+          <p>An error occurred. Redirecting...</p>
+          <script>
+            window.location.href = '${frontendUrl}/?error=processing-failed';
+          </script>
         </body>
       </html>`,
       {
         status: 200,
-        headers: { "Content-Type": "text/html" },
+        headers: { "Content-Type": "text/html; charset=utf-8" },
       }
     );
   }
