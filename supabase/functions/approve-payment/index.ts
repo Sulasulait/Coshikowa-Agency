@@ -185,7 +185,7 @@ Deno.serve(async (req: Request) => {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Coshikowa Agency <notifications@updates.coshikowa.com>",
+        from: "Coshikowa Agency <onboarding@resend.dev>",
         to: [payment.email],
         subject: "Payment Approved - Application Submitted",
         html: customerEmailHtml,
