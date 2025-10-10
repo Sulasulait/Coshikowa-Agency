@@ -1,7 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const API_KEY = "re_USB4mTSP_GBpzjabwUuxzCX5Fpg6oy9XK";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -28,6 +26,12 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    const API_KEY = Deno.env.get("RESEND_API_KEY");
+
+    if (!API_KEY) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+
     const requestData: HiringRequest = await req.json();
 
     const emailHtml = `
