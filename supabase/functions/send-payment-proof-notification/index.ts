@@ -48,7 +48,7 @@ Deno.serve(async (req: Request) => {
 
     if (updateError) throw updateError;
 
-    const approvalUrl = `${supabaseUrl.replace('neywpwtpbdvaecvdvnco', 'zwmaufrxgmwoaurjconh')}/functions/v1/approve-payment?token=${approvalToken}`;
+    const approvalUrl = `${supabaseUrl}/functions/v1/approve-payment?token=${approvalToken}`;
 
     const paymentType = payment.payment_type === "job_application" ? "Job Application" : "Hiring Request";
     const amount = `KES ${payment.amount_kes.toLocaleString()}`;
@@ -219,8 +219,8 @@ Deno.serve(async (req: Request) => {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Coshikowa Agency <notifications@updates.coshikowa.com>",
-        to: ["joshuanjoroge48@gmail.com"],
+        from: "Coshikowa Agency <onboarding@resend.dev>",
+        to: ["sulaite256@gmail.com"],
         subject: `New Payment Proof - ${paymentType} (${amount})`,
         html: emailHtml,
       }),
