@@ -198,6 +198,9 @@ Deno.serve(async (req: Request) => {
       `<!DOCTYPE html>
       <html>
         <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
           <title>Payment Approved</title>
           <style>
             body {
@@ -283,7 +286,10 @@ Deno.serve(async (req: Request) => {
       </html>`,
       {
         status: 200,
-        headers: { "Content-Type": "text/html" },
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-cache, no-store, must-revalidate"
+        },
       }
     );
   } catch (error: unknown) {
