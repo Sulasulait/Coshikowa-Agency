@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
@@ -7,11 +7,39 @@ import { Briefcase, Users, Shield, Zap } from "lucide-react";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { JobOpeningsSection } from "./JobOpenings";
 import { Helmet } from "react-helmet";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 const jobSeekersImg = "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg";
 const employersImg = "https://images.pexels.com/photos/3184639/pexels-photo-3184639.jpeg";
 
 const Index = () => {
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("approved") === "true") {
+      const type = searchParams.get("type");
+      const amount = searchParams.get("amount");
+      toast.success("Payment Approved Successfully!", {
+        description: `${type === "job_application" ? "Job Application" : "Hiring Request"} - KES ${amount ? parseInt(amount).toLocaleString() : "N/A"}. The application has been sent to your email.`,
+        duration: 8000,
+      });
+      window.history.replaceState({}, "", "/");
+    } else if (searchParams.get("already-approved") === "true") {
+      toast.info("Already Approved", {
+        description: "This payment has already been approved and processed.",
+        duration: 5000,
+      });
+      window.history.replaceState({}, "", "/");
+    } else if (searchParams.get("error")) {
+      toast.error("Approval Error", {
+        description: "There was an issue processing the approval. Please contact support.",
+        duration: 5000,
+      });
+      window.history.replaceState({}, "", "/");
+    }
+  }, [searchParams]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>

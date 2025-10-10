@@ -20,12 +20,23 @@ Deno.serve(async (req: Request) => {
     const frontendUrl = Deno.env.get("FRONTEND_URL") || "https://coshikowa.netlify.app";
 
     if (!token) {
-      return new Response(null, {
-        status: 302,
-        headers: {
-          "Location": `${frontendUrl}/approval-success?error=no-token`,
-        },
-      });
+      return new Response(
+        `<!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="refresh" content="0;url=${frontendUrl}/?error=no-token">
+            <title>Redirecting...</title>
+          </head>
+          <body>
+            <p>Redirecting...</p>
+          </body>
+        </html>`,
+        {
+          status: 200,
+          headers: { "Content-Type": "text/html" },
+        }
+      );
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -44,21 +55,43 @@ Deno.serve(async (req: Request) => {
     if (fetchError) throw fetchError;
 
     if (!payment) {
-      return new Response(null, {
-        status: 302,
-        headers: {
-          "Location": `${frontendUrl}/approval-success?token=${token}`,
-        },
-      });
+      return new Response(
+        `<!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="refresh" content="0;url=${frontendUrl}/?error=invalid-token">
+            <title>Redirecting...</title>
+          </head>
+          <body>
+            <p>Redirecting...</p>
+          </body>
+        </html>`,
+        {
+          status: 200,
+          headers: { "Content-Type": "text/html" },
+        }
+      );
     }
 
     if (payment.payment_status === "completed") {
-      return new Response(null, {
-        status: 302,
-        headers: {
-          "Location": `${frontendUrl}/approval-success?token=${token}`,
-        },
-      });
+      return new Response(
+        `<!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="refresh" content="0;url=${frontendUrl}/?already-approved=true">
+            <title>Redirecting...</title>
+          </head>
+          <body>
+            <p>Redirecting...</p>
+          </body>
+        </html>`,
+        {
+          status: 200,
+          headers: { "Content-Type": "text/html" },
+        }
+      );
     }
 
     const { error: updateError } = await supabase
@@ -144,20 +177,42 @@ Deno.serve(async (req: Request) => {
       console.error("Error sending customer notification:", error);
     });
 
-    return new Response(null, {
-      status: 302,
-      headers: {
-        "Location": `${frontendUrl}/approval-success?token=${token}`,
-      },
-    });
+    return new Response(
+      `<!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="refresh" content="0;url=${frontendUrl}/?approved=true&type=${encodeURIComponent(payment.payment_type)}&amount=${encodeURIComponent(payment.amount_kes)}">
+          <title>Redirecting...</title>
+        </head>
+        <body>
+          <p>Redirecting...</p>
+        </body>
+      </html>`,
+      {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      }
+    );
   } catch (error: unknown) {
     console.error("Error:", error);
     const frontendUrl = Deno.env.get("FRONTEND_URL") || "https://coshikowa.netlify.app";
-    return new Response(null, {
-      status: 302,
-      headers: {
-        "Location": `${frontendUrl}/approval-success?error=processing-failed`,
-      },
-    });
+    return new Response(
+      `<!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="refresh" content="0;url=${frontendUrl}/?error=processing-failed">
+          <title>Redirecting...</title>
+        </head>
+        <body>
+          <p>Redirecting...</p>
+        </body>
+      </html>`,
+      {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      }
+    );
   }
 });
