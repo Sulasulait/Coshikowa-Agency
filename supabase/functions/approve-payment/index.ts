@@ -17,31 +17,15 @@ Deno.serve(async (req: Request) => {
   try {
     const url = new URL(req.url);
     const token = url.searchParams.get("token");
+    const frontendUrl = Deno.env.get("FRONTEND_URL") || "https://coshikowa.netlify.app";
 
     if (!token) {
-      return new Response(
-        `<!DOCTYPE html>
-        <html>
-          <head>
-            <title>Invalid Request</title>
-            <style>
-              body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f9fafb; }
-              .container { max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-              .error { color: #dc2626; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h1 class="error">Invalid Request</h1>
-              <p>No approval token provided.</p>
-            </div>
-          </body>
-        </html>`,
-        {
-          status: 400,
-          headers: { "Content-Type": "text/html" },
-        }
-      );
+      return new Response(null, {
+        status: 302,
+        headers: {
+          "Location": `${frontendUrl}/approval-success?error=no-token`,
+        },
+      });
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -60,55 +44,21 @@ Deno.serve(async (req: Request) => {
     if (fetchError) throw fetchError;
 
     if (!payment) {
-      return new Response(
-        `<!DOCTYPE html>
-        <html>
-          <head>
-            <title>Invalid Token</title>
-            <style>
-              body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f9fafb; }
-              .container { max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-              .error { color: #dc2626; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h1 class="error">Invalid or Expired Token</h1>
-              <p>This approval link is invalid or has already been used.</p>
-            </div>
-          </body>
-        </html>`,
-        {
-          status: 404,
-          headers: { "Content-Type": "text/html" },
-        }
-      );
+      return new Response(null, {
+        status: 302,
+        headers: {
+          "Location": `${frontendUrl}/approval-success?token=${token}`,
+        },
+      });
     }
 
     if (payment.payment_status === "completed") {
-      return new Response(
-        `<!DOCTYPE html>
-        <html>
-          <head>
-            <title>Already Approved</title>
-            <style>
-              body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f9fafb; }
-              .container { max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-              .success { color: #10b981; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h1 class="success">✓ Already Approved</h1>
-              <p>This payment has already been approved and processed.</p>
-            </div>
-          </body>
-        </html>`,
-        {
-          status: 200,
-          headers: { "Content-Type": "text/html" },
-        }
-      );
+      return new Response(null, {
+        status: 302,
+        headers: {
+          "Location": `${frontendUrl}/approval-success?token=${token}`,
+        },
+      });
     }
 
     const { error: updateError } = await supabase
@@ -154,14 +104,14 @@ Deno.serve(async (req: Request) => {
           </style>
         </head>
         <body>
-          <div class="header">
+          <div class=\"header\">
             <h1>✓ Payment Approved</h1>
           </div>
-          <div class="content">
+          <div class=\"content\">
             <p>Hello,</p>
-            <div class="success-box">
-              <h3 style="margin-top: 0; color: #059669;">Your payment has been approved!</h3>
-              <p style="margin-bottom: 0;">Your ${payment.payment_type === "job_application" ? "job application" : "hiring request"} has been successfully submitted to our team. We'll review it and get back to you shortly.</p>
+            <div class=\"success-box\">
+              <h3 style=\"margin-top: 0; color: #059669;\">Your payment has been approved!</h3>
+              <p style=\"margin-bottom: 0;\">Your ${payment.payment_type === "job_application" ? "job application" : "hiring request"} has been successfully submitted to our team. We'll review it and get back to you shortly.</p>
             </div>
             <p><strong>Payment Details:</strong></p>
             <ul>
@@ -171,7 +121,7 @@ Deno.serve(async (req: Request) => {
             </ul>
             <p>Thank you for choosing Coshikowa Agency!</p>
           </div>
-          <div class="footer">
+          <div class=\"footer\">
             <p>Coshikowa Agency - Your trusted recruitment partner</p>
           </div>
         </body>
@@ -194,129 +144,20 @@ Deno.serve(async (req: Request) => {
       console.error("Error sending customer notification:", error);
     });
 
-    return new Response(
-      `<!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-          <title>Payment Approved</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              text-align: center;
-              padding: 50px;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              min-height: 100vh;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin: 0;
-            }
-            .container {
-              max-width: 500px;
-              background: white;
-              padding: 50px;
-              border-radius: 20px;
-              box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            }
-            .success-icon {
-              width: 80px;
-              height: 80px;
-              background: #10b981;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin: 0 auto 20px;
-              font-size: 50px;
-              color: white;
-            }
-            h1 {
-              color: #059669;
-              margin: 20px 0;
-            }
-            p {
-              color: #6b7280;
-              line-height: 1.6;
-            }
-            .details {
-              background: #f9fafb;
-              padding: 20px;
-              border-radius: 10px;
-              margin: 20px 0;
-              text-align: left;
-            }
-            .detail-row {
-              display: flex;
-              justify-content: space-between;
-              padding: 8px 0;
-              border-bottom: 1px solid #e5e7eb;
-            }
-            .detail-row:last-child {
-              border-bottom: none;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="success-icon">✓</div>
-            <h1>Payment Approved Successfully!</h1>
-            <p>The payment has been approved and the application has been submitted.</p>
-            <div class="details">
-              <div class="detail-row">
-                <strong>Type:</strong>
-                <span>${payment.payment_type === "job_application" ? "Job Application" : "Hiring Request"}</span>
-              </div>
-              <div class="detail-row">
-                <strong>Amount:</strong>
-                <span>KES ${payment.amount_kes.toLocaleString()}</span>
-              </div>
-              <div class="detail-row">
-                <strong>Customer:</strong>
-                <span>${payment.email}</span>
-              </div>
-            </div>
-            <p style="margin-top: 30px;">
-              <strong>The customer has been notified via email.</strong>
-            </p>
-          </div>
-        </body>
-      </html>`,
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "text/html; charset=utf-8",
-          "Cache-Control": "no-cache, no-store, must-revalidate"
-        },
-      }
-    );
+    return new Response(null, {
+      status: 302,
+      headers: {
+        "Location": `${frontendUrl}/approval-success?token=${token}`,
+      },
+    });
   } catch (error: unknown) {
     console.error("Error:", error);
-    return new Response(
-      `<!DOCTYPE html>
-      <html>
-        <head>
-          <title>Error</title>
-          <style>
-            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f9fafb; }
-            .container { max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .error { color: #dc2626; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <h1 class="error">Error</h1>
-            <p>An error occurred while processing the approval.</p>
-            <p style="color: #6b7280; font-size: 14px;">${error instanceof Error ? error.message : String(error)}</p>
-          </div>
-        </body>
-      </html>`,
-      {
-        status: 500,
-        headers: { "Content-Type": "text/html" },
-      }
-    );
+    const frontendUrl = Deno.env.get("FRONTEND_URL") || "https://coshikowa.netlify.app";
+    return new Response(null, {
+      status: 302,
+      headers: {
+        "Location": `${frontendUrl}/approval-success?error=processing-failed`,
+      },
+    });
   }
 });
