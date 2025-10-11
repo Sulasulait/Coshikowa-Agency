@@ -91,7 +91,7 @@ const About = () => {
             <Card className="p-8">
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Kenya Jobs was born from a simple observation: talented Kenyans struggling to find 
+                  Coshikowa Agency was born from a simple observation: talented Kenyans struggling to find 
                   meaningful employment, while businesses couldn't easily access the right candidates. 
                   We saw an opportunity to make a difference.
                 </p>
@@ -122,7 +122,7 @@ const About = () => {
                   Affordable Access
                 </h3>
                 <p className="text-muted-foreground ml-7">
-                  At just KSH 1,500, we make professional job placement accessible to all Kenyans, 
+                  At just KSH 2,000 we make professional job placement accessible to all Kenyans, 
                   regardless of their financial situation.
                 </p>
               </Card>
@@ -185,8 +185,8 @@ const About = () => {
               <div className="space-y-3">
                 <div>
                   <span className="font-semibold">Email:</span>{" "}
-                  <a href="mailto:sulaite256@gmail.com" className="text-primary hover:underline">
-                    sulaite256@gmail.com
+                  <a href="mailto:info@coshikowaagency.com" className="text-primary hover:underline">
+                    info@coshikowaagency.com
                   </a>
                 </div>
                 <div>

@@ -69,7 +69,7 @@ const HowItWorks = () => {
                 <div className="text-2xl font-bold text-accent mb-2">Step 2</div>
                 <h3 className="font-semibold text-lg mb-2">Secure Payment</h3>
                 <p className="text-sm text-muted-foreground">
-                  Pay a one-time registration fee of KSH 1,500 via secure payment gateway
+                  Pay a one-time registration fee of KSH 2,000 via secure payment gateway
                 </p>
               </Card>
 
@@ -164,7 +164,7 @@ const HowItWorks = () => {
               <Card className="p-6">
                 <h3 className="font-semibold text-lg mb-2">Why is there a registration fee for job seekers?</h3>
                 <p className="text-muted-foreground">
-                  The KSH 1,500 fee helps us maintain a high-quality database of serious job seekers, 
+                  The KSH 2,000 fee helps us maintain a high-quality database of serious job seekers, 
                   verify profiles thoroughly, and provide excellent matching services to both candidates and employers.
                 </p>
               </Card>

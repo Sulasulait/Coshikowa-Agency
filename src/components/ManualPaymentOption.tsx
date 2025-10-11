@@ -175,7 +175,7 @@ export const ManualPaymentOption = ({
                   Account: <span className="font-medium text-foreground">0286265672</span>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Name: <span className="font-medium text-foreground">Joshua</span>
+                  Name: <span className="font-medium text-foreground">Coshkowa Agency</span>
                 </div>
               </Label>
             </div>
