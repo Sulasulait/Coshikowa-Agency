@@ -95,36 +95,37 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Application email sent successfully");
 
-    await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: "Coshikowa Agency <onboarding@resend.dev>",
-        to: [applicationData.email],
-        subject: "Application Received - Coshikowa Agency",
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="text-align: center; padding: 20px; background-color: #f8f9fa;">
-              <img src="https://i.ibb.co/SwJPbKH/coshikowa-logo.png" alt="Coshikowa Agency" style="max-width: 200px; height: auto;" />
-            </div>
+    // Confirmation email to applicant is disabled
+    // await fetch("https://api.resend.com/emails", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${API_KEY}`,
+    //   },
+    //   body: JSON.stringify({
+    //     from: "Coshikowa Agency <onboarding@resend.dev>",
+    //     to: [applicationData.email],
+    //     subject: "Application Received - Coshikowa Agency",
+    //     html: `
+    //       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    //         <div style="text-align: center; padding: 20px; background-color: #f8f9fa;">
+    //           <img src="https://i.ibb.co/SwJPbKH/coshikowa-logo.png" alt="Coshikowa Agency" style="max-width: 200px; height: auto;" />
+    //         </div>
 
-            <div style="padding: 30px; background-color: white;">
-              <h1 style="color: #059669;">Thank you for your application, ${applicationData.fullName}!</h1>
-              <p style="font-size: 16px; line-height: 1.6;">We have received your job application for the position of <strong>${applicationData.desiredPosition}</strong>.</p>
-              <p style="font-size: 16px; line-height: 1.6;">Our team will review your application and get back to you within 24 hours.</p>
-              <p style="font-size: 16px; line-height: 1.6; margin-top: 30px;">Best regards,<br><strong>Coshikowa Agency Team</strong></p>
-            </div>
+    //         <div style="padding: 30px; background-color: white;">
+    //           <h1 style="color: #059669;">Thank you for your application, ${applicationData.fullName}!</h1>
+    //           <p style="font-size: 16px; line-height: 1.6;">We have received your job application for the position of <strong>${applicationData.desiredPosition}</strong>.</p>
+    //           <p style="font-size: 16px; line-height: 1.6;">Our team will review your application and get back to you within 24 hours.</p>
+    //           <p style="font-size: 16px; line-height: 1.6; margin-top: 30px;">Best regards,<br><strong>Coshikowa Agency Team</strong></p>
+    //         </div>
 
-            <div style="text-align: center; padding: 20px; background-color: #f8f9fa; color: #6b7280; font-size: 12px;">
-              <p>© 2025 Coshikowa Agency. All rights reserved.</p>
-            </div>
-          </div>
-        `,
-      }),
-    });
+    //         <div style="text-align: center; padding: 20px; background-color: #f8f9fa; color: #6b7280; font-size: 12px;">
+    //           <p>© 2025 Coshikowa Agency. All rights reserved.</p>
+    //         </div>
+    //       </div>
+    //     `,
+    //   }),
+    // });
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
