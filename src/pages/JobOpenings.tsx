@@ -98,7 +98,7 @@ export const JobOpeningsSection = () => {
                     </p>
 
                     <Button variant="default" className={`w-full bg-gradient-to-r ${colorScheme.border.replace('border', 'from')}-500 to-${colorScheme.border.replace('border-', '').replace('-400', '')}-600 hover:shadow-lg transform hover:scale-[1.02] transition-all`} asChild>
-                      <a href="/get-hired" style="color: blue;">
+                      <a href="/get-hired">
                         <Briefcase className="h-4 w-4 mr-2" />
                         Apply Now
                       </a>

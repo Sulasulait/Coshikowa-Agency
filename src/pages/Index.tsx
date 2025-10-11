@@ -192,7 +192,7 @@ const Index = () => {
                   </li>
                   <li className="flex gap-3">
                     <span className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold flex items-center justify-center">2</span>
-                    <span>Pay the one-time registration fee of KSH 1,500</span>
+                    <span>Pay the one-time registration fee of KSH 2,000</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold flex items-center justify-center">3</span>
@@ -238,6 +238,10 @@ const Index = () => {
                   <li className="flex gap-3">
                     <span className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold flex items-center justify-center">4</span>
                     <span>Hire the perfect fit for your team!</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold flex items-center justify-center">5</span>
+                    <span>Pay the one-time registration fee of KSH 3,000</span>
                   </li>
                 </ol>
                 <Link to="/find-talent">
